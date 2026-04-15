@@ -1,8 +1,33 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Contact() {
+  const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      setSubmitted(true);
+      setFormData({ name: '', email: '', service: '', message: '' });
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (error) {
+      console.error('Failed to submit:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <section id="contact" className="py-24 bg-[#050505] border-t border-white/10">
       <div className="max-w-screen-2xl mx-auto px-8">
@@ -74,6 +99,7 @@ export default function Contact() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
+            onSubmit={handleSubmit}
             className="space-y-8"
           >
             <div className="grid grid-cols-2 gap-6">
@@ -83,6 +109,8 @@ export default function Contact() {
                   type="text" 
                   placeholder="Full name" 
                   required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500" 
                 />
               </div>
@@ -92,6 +120,8 @@ export default function Contact() {
                   type="text" 
                   placeholder="Contact info" 
                   required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500" 
                 />
               </div>
@@ -99,28 +129,36 @@ export default function Contact() {
             
             <div>
               <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">SERVICE REQUIRED</label>
-              <select className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white">
-                <option>Poster Design</option>
-                <option>Brand Identity Pack</option>
-                <option>Event Campaign</option>
-                <option>Full Visual System</option>
+              <select 
+                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white"
+                value={formData.service}
+                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+              >
+                <option value="">Select a service</option>
+                <option value="Poster Design">Poster Design</option>
+                <option value="Brand Identity Pack">Brand Identity Pack</option>
+                <option value="Event Campaign">Event Campaign</option>
+                <option value="Full Visual System">Full Visual System</option>
               </select>
             </div>
             
             <div>
               <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">PROJECT BRIEF</label>
               <textarea 
-                placeholder="Tell me about your project, timeline, and any references..." 
+                placeholder="Tell me about your project, timeline, and references..." 
                 rows={6}
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500 resize-none"
               />
             </div>
             
             <button 
               type="submit"
-              className="w-full py-8 bg-gradient-to-r from-[#C9A84C] to-[#E5D4A1] text-black font-bold text-2xl rounded-3xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
+              disabled={submitting || submitted}
+              className="w-full py-8 bg-gradient-to-r from-[#C9A84C] to-[#E5D4A1] text-black font-bold text-2xl rounded-3xl flex items-center justify-center gap-4 hover:scale-105 transition-transform disabled:opacity-50"
             >
-              SEND BRIEF 
+              {submitting ? 'SENDING...' : submitted ? 'SENT!' : 'SEND BRIEF'}
               <i className="fas fa-paper-plane" />
             </button>
           </motion.form>

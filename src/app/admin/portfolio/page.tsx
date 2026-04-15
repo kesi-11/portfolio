@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ImageUpload from '@/components/ImageUpload';
 
 interface PortfolioItem {
   id: number;
@@ -21,7 +22,7 @@ export default function PortfolioPage() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
-  const [formData, setFormData] = useState({ title: '', category: '', label: '', color: 'bg-red-900' });
+  const [formData, setFormData] = useState({ title: '', category: '', label: '', color: 'bg-red-900', image_url: '' });
 
   useEffect(() => {
     fetchItems();
@@ -50,7 +51,7 @@ export default function PortfolioPage() {
 
     setIsModalOpen(false);
     setEditingItem(null);
-    setFormData({ title: '', category: '', label: '', color: 'bg-red-900' });
+    setFormData({ title: '', category: '', label: '', color: 'bg-red-900', image_url: '' });
     fetchItems();
   }
 
@@ -63,7 +64,7 @@ export default function PortfolioPage() {
 
   function openEdit(item: PortfolioItem) {
     setEditingItem(item);
-    setFormData({ title: item.title, category: item.category, label: item.label, color: item.color });
+    setFormData({ title: item.title, category: item.category, label: item.label, color: item.color, image_url: item.image_url || '' });
     setIsModalOpen(true);
   }
 
@@ -75,7 +76,7 @@ export default function PortfolioPage() {
           <p className="text-gray-400 mt-2">Manage your projects and posters</p>
         </div>
         <button
-          onClick={() => { setIsModalOpen(true); setEditingItem(null); setFormData({ title: '', category: '', label: '', color: 'bg-red-900' }); }}
+          onClick={() => { setIsModalOpen(true); setEditingItem(null); setFormData({ title: '', category: '', label: '', color: 'bg-red-900', image_url: '' }); }}
           className="px-6 py-3 bg-[#C9A84C] text-black font-semibold rounded-2xl hover:bg-[#E5D4A1] transition-colors"
         >
           Add Project
@@ -85,9 +86,13 @@ export default function PortfolioPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div key={item.id} className="bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden">
-            <div className={`h-40 ${item.color} flex items-center justify-center`}>
-              <span className="text-white/30 text-6xl font-['Playfair_Display']">{item.id}</span>
-            </div>
+            {item.image_url ? (
+              <img src={item.image_url} alt={item.label} className="w-full h-40 object-cover" />
+            ) : (
+              <div className={`h-40 ${item.color} flex items-center justify-center`}>
+                <span className="text-white/30 text-6xl font-['Playfair_Display']">{item.id}</span>
+              </div>
+            )}
             <div className="p-6">
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -110,9 +115,16 @@ export default function PortfolioPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 w-full max-w-md">
+          <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6">{editingItem ? 'Edit Project' : 'Add Project'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Project Image</label>
+                <ImageUpload
+                  value={formData.image_url}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
+                />
+              </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Label</label>
                 <input
@@ -137,7 +149,7 @@ export default function PortfolioPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Color</label>
+                <label className="block text-sm text-gray-400 mb-2">Fallback Color (if no image)</label>
                 <div className="flex gap-2 flex-wrap">
                   {colors.map((color) => (
                     <button
