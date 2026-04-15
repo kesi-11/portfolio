@@ -4,66 +4,69 @@ import { motion } from 'framer-motion';
 
 const services = [
   {
-    title: 'Starter',
+    title: 'STARTER',
     price: 'KES 2,500',
-    description: 'Perfect for quick design needs',
+    description: 'Perfect for single-piece requests and quick turnarounds for small brands.',
     features: [
-      'Social Media Post Design',
-      'Quick Edits & Adjustments',
-      '1 Revision Round',
-      '24hr Turnaround',
-      'JPEG/PNG Delivery',
+      '1 poster or social media graphic',
+      '2 revision rounds',
+      'High-res PNG + PDF export',
+      '48-hour delivery',
     ],
     featured: false,
+    cta: 'GET STARTED',
   },
   {
-    title: 'Event Package',
-    price: 'KES 6,500',
-    description: 'Ideal for events & promotions',
+    title: 'BRAND PACK',
+    price: 'KES 12,000',
+    description: 'The full brand treatment — identity, collateral, and everything in between.',
     features: [
-      'Event Poster Design',
-      'Banner Design',
-      '3 Revision Rounds',
-      '48hr Turnaround',
-      'All File Formats',
-      'Print-Ready Files',
+      'Logo + brand identity system',
+      'Business card + letterhead',
+      '5 social media templates',
+      'Unlimited revisions',
+      'Source files included',
     ],
     featured: true,
+    cta: 'GET THIS PACK',
   },
   {
-    title: 'Brand Pack',
-    price: 'KES 12,000',
-    description: 'Complete brand identity solution',
+    title: 'EVENT / CAMPAIGN',
+    price: 'KES 6,500',
+    description: 'Full event visual suite — posters, flyers, tickets, and digital assets.',
     features: [
-      'Logo Design',
-      'Brand Guidelines',
-      'Business Card Design',
-      'Social Media Kit',
-      'Unlimited Revisions',
-      'Priority Support',
-      'Source Files Included',
+      'Event poster (A3 + digital)',
+      'Flyer design (front + back)',
+      '3 social banner sizes',
+      '4 revision rounds',
     ],
     featured: false,
+    cta: 'BOOK CAMPAIGN',
   },
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="py-24 bg-[#050505]">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="services" className="py-24 bg-black border-t border-b border-white/10">
+      <div className="max-w-screen-2xl mx-auto px-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="relative mb-12"
+        >
+          <span className="uppercase text-xs tracking-[2px] text-[#C9A84C] font-bold">RATE CARD</span>
+          <div className="absolute w-16 h-0.5 bg-gradient-to-r from-[#C9A84C] to-transparent bottom-[-8px]" />
+        </motion.div>
+        
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-5xl md:text-6xl font-bold font-['Playfair_Display'] mt-4 mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold font-['Playfair_Display'] mb-4">
-            Services & <span className="text-[#C9A84C]">Pricing</span>
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Choose the package that fits your needs. All packages include professional design and dedicated support.
-          </p>
-        </motion.div>
+          Investment in Design<br />That Pays for Itself.
+        </motion.h2>
 
         <div className="grid md:grid-cols-3 gap-8">
           {services.map((service, index) => (
@@ -73,28 +76,36 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative p-8 rounded-xl border transition-all duration-300 hover:transform hover:-translate-y-2 ${
+              className={`relative p-8 rounded-3xl border flex flex-col transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_25px_50px_-12px_rgba(201,168,76,0.25)] ${
                 service.featured
-                  ? 'bg-[#C9A84C]/10 border-[#C9A84C]'
-                  : 'bg-[#0a0a0a] border-[#1a1a1a] hover:border-[#C9A84C]/50'
+                  ? 'bg-gradient-to-br from-[#C9A84C] to-[#E5D4A1] text-black'
+                  : 'bg-white/5 border-white/10 hover:border-[#C9A84C]/30'
               }`}
             >
               {service.featured && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#C9A84C] text-[#050505] px-4 py-1 text-sm font-semibold uppercase tracking-wider">
-                  Most Popular
+                <div className="absolute -top-3 right-8 bg-black text-[#C9A84C] text-xs font-bold px-5 py-1 rounded-full">
+                  MOST POPULAR
                 </div>
               )}
 
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold font-['Playfair_Display'] mb-2">{service.title}</h3>
-                <div className="text-4xl font-bold text-[#C9A84C] mb-2">{service.price}</div>
-                <p className="text-gray-500 text-sm">{service.description}</p>
+              <div className="mb-8">
+                <span className="text-xs font-bold uppercase tracking-widest">{service.title}</span>
+                <div className={`text-7xl font-bold mt-2 ${service.featured ? 'text-black' : 'text-[#C9A84C]'}`}>
+                  {service.price}
+                </div>
+                <p className={`text-sm mt-2 ${service.featured ? 'opacity-70' : 'text-gray-400'}`}>
+                  {service.title === 'BRAND PACK' ? '/pack' : service.title === 'EVENT / CAMPAIGN' ? '/campaign' : '/project'}
+                </p>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <p className={`mb-8 ${service.featured ? 'text-black/80' : 'text-gray-400'}`}>
+                {service.description}
+              </p>
+
+              <ul className={`space-y-4 text-sm mt-auto pt-10 ${service.featured ? 'text-black/80' : 'text-gray-400'}`}>
                 {service.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-gray-400">
-                    <svg className="w-5 h-5 text-[#C9A84C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <li key={feature} className="flex items-center gap-3">
+                    <svg className={`w-5 h-5 ${service.featured ? 'text-black' : 'text-[#C9A84C]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     {feature}
@@ -102,19 +113,28 @@ export default function Services() {
                 ))}
               </ul>
 
-              <a
-                href="#contact"
-                className={`block text-center py-3 font-semibold uppercase tracking-wider transition-colors ${
+              <button
+                className={`mt-12 w-full py-6 font-bold rounded-full text-lg transition-transform hover:scale-105 ${
                   service.featured
-                    ? 'bg-[#C9A84C] text-[#050505] hover:bg-[#E5D4A1]'
-                    : 'border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C]/10'
+                    ? 'bg-black text-white hover:bg-gray-900'
+                    : 'bg-white text-black hover:bg-gray-200'
                 }`}
               >
-                Choose Plan
-              </a>
+                {service.cta}
+              </button>
             </motion.div>
           ))}
         </div>
+        
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-sm text-gray-400 mt-12"
+        >
+          Custom pricing available for retainer agreements and large-scale projects.{' '}
+          <a href="#contact" className="text-[#C9A84C] underline">Let&apos;s talk →</a>
+        </motion.p>
       </div>
     </section>
   );
