@@ -140,7 +140,7 @@ export default function PortfolioPage() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-white outline-none transition-colors"
                 >
                   <option value="business-cards">Business Cards</option>
                   <option value="business-posters">Business Posters</option>

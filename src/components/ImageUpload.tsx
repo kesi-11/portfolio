@@ -11,12 +11,14 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState('');
-  const [debug, setDebug] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [useUrl, setUseUrl] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     setError('');
-    setDebug('');
+    setSuccess(false);
     
     if (!file) {
       setError('No file selected');
@@ -24,7 +26,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     }
 
     if (!file.type.startsWith('image/')) {
-      setError('File must be an image (PNG, JPG, GIF)');
+      setError('File must be an image (PNG, JPG, GIF, WEBP)');
       return;
     }
 
@@ -34,13 +36,10 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     }
 
     setUploading(true);
-    setDebug(`Uploading ${file.name} (${Math.round(file.size / 1024)}KB)...`);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
-
-      setDebug('Sending to server...');
       
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -49,8 +48,6 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
 
       const data = await res.json();
       
-      console.log('Upload response:', res.status, data);
-
       if (!res.ok) {
         throw new Error(data.error || `Server error: ${res.status}`);
       }
@@ -59,15 +56,22 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
         throw new Error('No URL returned from server');
       }
 
-      setDebug('Got URL from Cloudinary!');
       onChange(data.url);
-      setDebug('Image uploaded successfully!');
+      setSuccess(true);
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.message || 'Failed to upload. Please try again.');
-      setDebug('');
+      setError(err.message || 'Upload failed. Try using URL instead.');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (urlInput.trim()) {
+      onChange(urlInput.trim());
+      setUrlInput('');
+      setUseUrl(false);
     }
   };
 
@@ -84,20 +88,62 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
+      {/* Toggle between upload and URL */}
+      <div className="flex gap-2 mb-2">
+        <button
+          type="button"
+          onClick={() => setUseUrl(false)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            !useUrl 
+              ? 'bg-[#C9A84C] text-black' 
+              : 'bg-white/10 text-gray-400 hover:text-white'
+          }`}
+        >
+          Upload File
+        </button>
+        <button
+          type="button"
+          onClick={() => setUseUrl(true)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            useUrl 
+              ? 'bg-[#C9A84C] text-black' 
+              : 'bg-white/10 text-gray-400 hover:text-white'
+          }`}
+        >
+          Use URL
+        </button>
+      </div>
+
       {error && (
         <div className="p-3 bg-red-500/20 border border-red-500/50 text-red-400 text-sm rounded-lg">
           {error}
         </div>
       )}
       
-      {debug && !error && (
-        <div className="p-3 bg-blue-500/20 border border-blue-500/50 text-blue-400 text-sm rounded-lg">
-          {debug}
+      {success && !useUrl && (
+        <div className="p-3 bg-green-500/20 border border-green-500/50 text-green-400 text-sm rounded-lg">
+          Image uploaded successfully!
         </div>
       )}
       
-      {value ? (
+      {useUrl ? (
+        <form onSubmit={handleUrlSubmit} className="flex gap-2">
+          <input
+            type="url"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="Paste image URL (from Cloudinary, etc.)"
+            className="flex-1 bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-white placeholder-gray-500 outline-none"
+          />
+          <button
+            type="submit"
+            className="px-4 py-3 bg-[#C9A84C] text-black font-semibold rounded-xl hover:bg-[#E5D4A1] transition-colors"
+          >
+            Add
+          </button>
+        </form>
+      ) : value ? (
         <div className="relative group">
           <img
             src={value}
