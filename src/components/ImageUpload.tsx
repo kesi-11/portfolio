@@ -1,32 +1,51 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { uploadImage } from '@/lib/supabase';
 
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
-  bucket?: string;
 }
 
-export default function ImageUpload({ value, onChange, bucket = 'portfolio' }: ImageUploadProps) {
+export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
+      setError('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File must be less than 5MB');
       return;
     }
 
     setUploading(true);
+    setError('');
+
     try {
-      const url = await uploadImage(file, bucket);
-      onChange(url);
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('Failed to upload image');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      onChange(data.url);
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setError(err.message || 'Failed to upload image');
     } finally {
       setUploading(false);
     }
@@ -46,6 +65,12 @@ export default function ImageUpload({ value, onChange, bucket = 'portfolio' }: I
 
   return (
     <div>
+      {error && (
+        <div className="mb-2 p-2 bg-red-500/20 text-red-400 text-sm rounded-lg">
+          {error}
+        </div>
+      )}
+      
       {value ? (
         <div className="relative group">
           <img
@@ -72,7 +97,10 @@ export default function ImageUpload({ value, onChange, bucket = 'portfolio' }: I
           onClick={() => inputRef.current?.click()}
         >
           {uploading ? (
-            <div className="text-[#C9A84C]">Uploading...</div>
+            <div className="text-[#C9A84C] flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
+              Uploading...
+            </div>
           ) : (
             <div>
               <div className="text-4xl mb-2">📁</div>
