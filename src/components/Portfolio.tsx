@@ -13,10 +13,22 @@ interface Project {
 
 const filters = [
   { name: 'ALL WORK', value: 'all' },
-  { name: 'POSTERS', value: 'posters' },
-  { name: 'BRANDING', value: 'branding' },
-  { name: 'SOCIAL MEDIA', value: 'social' },
-  { name: 'EVENTS', value: 'events' },
+  { name: 'BUSINESS CARDS', value: 'business-cards' },
+  { name: 'POSTERS', value: 'business-posters' },
+  { name: 'LOGOS', value: 'logos' },
+  { name: 'FLYERS', value: 'flyers' },
+  { name: 'BANNERS', value: 'banners' },
+  { name: 'SOCIAL ADS', value: 'social-ads' },
+  { name: 'WEDDING', value: 'wedding-cards' },
+  { name: 'EVENTS', value: 'events-posters' },
+  { name: 'BIRTHDAY', value: 'birthday-posters' },
+  { name: 'MOVIES', value: 'movie-posters' },
+  { name: 'GRAPHIC', value: 'graphic-design' },
+  { name: 'VIDEO', value: 'video-editing' },
+  { name: 'VIDEOGRAPHY', value: 'videography' },
+  { name: 'PHOTO', value: 'photography' },
+  { name: 'DJ', value: 'dj' },
+  { name: 'FILMS', value: 'films' },
 ];
 
 export default function Portfolio() {

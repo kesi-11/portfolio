@@ -142,10 +142,22 @@ export default function PortfolioPage() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
                 >
-                  <option value="posters">Posters</option>
-                  <option value="branding">Branding</option>
-                  <option value="social">Social Media</option>
-                  <option value="events">Events</option>
+                  <option value="business-cards">Business Cards</option>
+                  <option value="business-posters">Business Posters</option>
+                  <option value="logos">Logos</option>
+                  <option value="flyers">Flyers</option>
+                  <option value="banners">Banners</option>
+                  <option value="social-ads">Social Media Ads</option>
+                  <option value="wedding-cards">Wedding Cards</option>
+                  <option value="events-posters">Event Posters</option>
+                  <option value="birthday-posters">Birthday Posters</option>
+                  <option value="movie-posters">Movie Posters</option>
+                  <option value="graphic-design">Graphic Design</option>
+                  <option value="video-editing">Video Editing</option>
+                  <option value="videography">Videography</option>
+                  <option value="photography">Photography</option>
+                  <option value="dj">DJ Services</option>
+                  <option value="films">Films</option>
                 </select>
               </div>
               <div>
