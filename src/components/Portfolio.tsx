@@ -73,12 +73,12 @@ export default function Portfolio() {
             </h2>
           </div>
           
-          <div className="hidden md:flex gap-2 text-sm">
+          <div className="flex gap-2 flex-wrap text-sm max-w-4xl">
             {filters.map((f) => (
               <button
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={`px-7 py-4 rounded-full font-semibold transition-all ${
+                className={`px-4 py-2 rounded-full font-semibold transition-all text-xs ${
                   filter === f.value 
                     ? 'bg-[#C9A84C] text-black' 
                     : 'bg-white/10 hover:bg-[#C9A84C] hover:text-black'
@@ -95,7 +95,7 @@ export default function Portfolio() {
         ) : (
           <motion.div 
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
           >
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, index) => (
