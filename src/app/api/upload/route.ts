@@ -7,6 +7,8 @@ cloudinary.config({
   api_secret: '3tWGw-EIqi9PUeOZ-El6GNIIqRM',
 });
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const formData = await request.formData();
@@ -16,24 +18,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    // Read file as array buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    const dataUri = `data:${file.type};base64,${base64}`;
+    
+    // Convert to base64
+    const base64String = buffer.toString('base64');
+    const mimeType = file.type || 'image/jpeg';
+    const dataUri = `data:${mimeType};base64,${base64String}`;
 
-    const result: any = await new Promise((resolve, reject) => {
+    // Upload to Cloudinary
+    const result = await new Promise<any>((resolve, reject) => {
       cloudinary.uploader.upload(dataUri, {
         folder: 'portfolio',
         resource_type: 'image',
-      }, (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
+        eager: '',
+      }, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
       });
     });
 
+    if (!result || !result.secure_url) {
+      return NextResponse.json({ error: 'Upload failed - no URL returned' }, { status: 500 });
+    }
+
     return NextResponse.json({ url: result.secure_url });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Upload failed' }, { status: 500 });
   }
 }

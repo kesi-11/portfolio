@@ -11,21 +11,23 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState('');
+  const [progress, setProgress] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
+      setError('Please upload an image file (PNG, JPG, GIF)');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('File must be less than 5MB');
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File must be less than 10MB');
       return;
     }
 
     setUploading(true);
     setError('');
+    setProgress('Uploading...');
 
     try {
       const formData = new FormData();
@@ -38,16 +40,22 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
 
       const data = await res.json();
 
-      if (!res.ok || data.error) {
+      if (!res.ok) {
         throw new Error(data.error || 'Upload failed');
       }
 
+      if (!data.url) {
+        throw new Error('No URL returned from server');
+      }
+
       onChange(data.url);
+      setProgress('Done!');
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.message || 'Failed to upload image');
+      setError(err.message || 'Failed to upload. Please try again.');
     } finally {
       setUploading(false);
+      setTimeout(() => setProgress(''), 2000);
     }
   };
 
@@ -64,9 +72,9 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   };
 
   return (
-    <div>
+    <div className="space-y-2">
       {error && (
-        <div className="mb-2 p-2 bg-red-500/20 text-red-400 text-sm rounded-lg">
+        <div className="p-3 bg-red-500/20 border border-red-500/50 text-red-400 text-sm rounded-lg">
           {error}
         </div>
       )}
@@ -76,20 +84,26 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           <img
             src={value}
             alt="Uploaded"
-            className="w-full h-40 object-cover rounded-xl"
+            className="w-full h-48 object-cover rounded-xl"
           />
+          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <span className="text-white text-sm">Click to replace</span>
+          </div>
           <button
             type="button"
             onClick={() => onChange('')}
-            className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+            title="Remove image"
           >
             ×
           </button>
         </div>
       ) : (
         <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-            dragOver ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-white/20 hover:border-[#C9A84C]'
+          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+            dragOver 
+              ? 'border-[#C9A84C] bg-[#C9A84C]/10' 
+              : 'border-white/20 hover:border-[#C9A84C] hover:bg-white/5'
           }`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -97,15 +111,16 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           onClick={() => inputRef.current?.click()}
         >
           {uploading ? (
-            <div className="text-[#C9A84C] flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
-              Uploading...
+            <div className="space-y-2">
+              <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-[#C9A84C]">{progress}</p>
             </div>
           ) : (
             <div>
-              <div className="text-4xl mb-2">📁</div>
-              <p className="text-gray-400">Click or drag to upload</p>
-              <p className="text-gray-500 text-sm mt-1">PNG, JPG, GIF up to 5MB</p>
+              <div className="text-5xl mb-3">📤</div>
+              <p className="text-gray-300 font-medium">Click to upload image</p>
+              <p className="text-gray-500 text-sm mt-2">or drag and drop</p>
+              <p className="text-gray-600 text-xs mt-1">PNG, JPG, GIF up to 10MB</p>
             </div>
           )}
         </div>
@@ -113,7 +128,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/gif,image/webp"
         onChange={handleChange}
         className="hidden"
       />
