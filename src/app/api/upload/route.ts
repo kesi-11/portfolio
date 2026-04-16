@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { v2 as cloudinary } from 'cloudinary';
 
-export async function POST(request: NextRequest) {
+cloudinary.config({
+  cloud_name: 'drds7n7gi',
+  api_key: '979836697357783',
+  api_secret: '3tWGw-EIqi9PUeOZ-El6GNIIqRM',
+});
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -10,30 +16,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const bucket = 'portfolio';
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString('base64');
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, buffer, {
-        contentType: file.type,
-        upsert: false,
+    const result: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(dataUri, {
+        folder: 'portfolio',
+        resource_type: 'image',
+      }, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
       });
+    });
 
-    if (error) {
-      console.error('Supabase upload error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
-
-    return NextResponse.json({ url: publicUrl });
+    return NextResponse.json({ url: result.secure_url });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
