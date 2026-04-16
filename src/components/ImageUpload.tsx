@@ -11,12 +11,20 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState('');
-  const [progress, setProgress] = useState('');
+  const [debug, setDebug] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
+    setError('');
+    setDebug('');
+    
+    if (!file) {
+      setError('No file selected');
+      return;
+    }
+
     if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file (PNG, JPG, GIF)');
+      setError('File must be an image (PNG, JPG, GIF)');
       return;
     }
 
@@ -26,36 +34,40 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     }
 
     setUploading(true);
-    setError('');
-    setProgress('Uploading...');
+    setDebug(`Uploading ${file.name} (${Math.round(file.size / 1024)}KB)...`);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
+      setDebug('Sending to server...');
+      
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
       const data = await res.json();
+      
+      console.log('Upload response:', res.status, data);
 
       if (!res.ok) {
-        throw new Error(data.error || 'Upload failed');
+        throw new Error(data.error || `Server error: ${res.status}`);
       }
 
       if (!data.url) {
         throw new Error('No URL returned from server');
       }
 
+      setDebug('Got URL from Cloudinary!');
       onChange(data.url);
-      setProgress('Done!');
+      setDebug('Image uploaded successfully!');
     } catch (err: any) {
       console.error('Upload error:', err);
       setError(err.message || 'Failed to upload. Please try again.');
+      setDebug('');
     } finally {
       setUploading(false);
-      setTimeout(() => setProgress(''), 2000);
     }
   };
 
@@ -76,6 +88,12 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       {error && (
         <div className="p-3 bg-red-500/20 border border-red-500/50 text-red-400 text-sm rounded-lg">
           {error}
+        </div>
+      )}
+      
+      {debug && !error && (
+        <div className="p-3 bg-blue-500/20 border border-blue-500/50 text-blue-400 text-sm rounded-lg">
+          {debug}
         </div>
       )}
       
@@ -113,7 +131,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           {uploading ? (
             <div className="space-y-2">
               <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-[#C9A84C]">{progress}</p>
+              <p className="text-[#C9A84C]">Uploading...</p>
             </div>
           ) : (
             <div>
@@ -121,6 +139,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
               <p className="text-gray-300 font-medium">Click to upload image</p>
               <p className="text-gray-500 text-sm mt-2">or drag and drop</p>
               <p className="text-gray-600 text-xs mt-1">PNG, JPG, GIF up to 10MB</p>
+              <p className="text-[#C9A84C] text-xs mt-3">Uploads to Cloudinary</p>
             </div>
           )}
         </div>
