@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
 
 export async function GET() {
   const { data, error } = await supabase
@@ -13,19 +14,39 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
+  const { label, category, image_url, fallback_color, featured, display_order } = body;
+
+  if (!label || !category) {
+    return NextResponse.json(
+      { error: 'label and category are required' },
+      { status: 400 }
+    );
+  }
+
   const { data, error } = await supabase
     .from('portfolio')
-    .insert([body])
+    .insert([{ 
+      label, 
+      category, 
+      image_url: image_url || '', 
+      fallback_color: fallback_color || '#1a1a2e', 
+      featured: featured ?? false,
+      display_order: display_order ?? 0,
+    }])
     .select()
     .single();
   
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+
+  revalidatePath('/');
+
+  return NextResponse.json(data, { status: 201 });
 }
 
 export async function PUT(request: Request) {
   const body = await request.json();
   const { id, ...updateData } = body;
+  
   const { data, error } = await supabase
     .from('portfolio')
     .update({ ...updateData, updated_at: new Date().toISOString() })
@@ -34,6 +55,9 @@ export async function PUT(request: Request) {
     .single();
   
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  revalidatePath('/');
+
   return NextResponse.json(data);
 }
 
@@ -46,8 +70,11 @@ export async function DELETE(request: Request) {
   const { error } = await supabase
     .from('portfolio')
     .delete()
-    .eq('id', id);
+    .eq('id', Number(id));
   
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  revalidatePath('/');
+
   return NextResponse.json({ success: true });
 }

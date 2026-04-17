@@ -2,33 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface Project {
   id: number;
   category: string;
   label: string;
-  color: string;
+  fallback_color: string;
   image_url: string;
 }
 
 const filters = [
-  { name: 'ALL WORK', value: 'all' },
-  { name: 'BUSINESS CARDS', value: 'business-cards' },
-  { name: 'POSTERS', value: 'business-posters' },
-  { name: 'LOGOS', value: 'logos' },
-  { name: 'FLYERS', value: 'flyers' },
-  { name: 'BANNERS', value: 'banners' },
-  { name: 'SOCIAL ADS', value: 'social-ads' },
-  { name: 'WEDDING', value: 'wedding-cards' },
-  { name: 'EVENTS', value: 'events-posters' },
-  { name: 'BIRTHDAY', value: 'birthday-posters' },
-  { name: 'MOVIES', value: 'movie-posters' },
-  { name: 'GRAPHIC', value: 'graphic-design' },
-  { name: 'VIDEO', value: 'video-editing' },
-  { name: 'VIDEOGRAPHY', value: 'videography' },
-  { name: 'PHOTO', value: 'photography' },
-  { name: 'DJ', value: 'dj' },
-  { name: 'FILMS', value: 'films' },
+  { name: 'ALL WORK', value: 'All Work' },
+  { name: 'BUSINESS CARDS', value: 'Business Cards' },
+  { name: 'POSTERS', value: 'Posters' },
+  { name: 'LOGOS', value: 'Logos' },
+  { name: 'FLYERS', value: 'Flyers' },
+  { name: 'BANNERS', value: 'Banners' },
+  { name: 'SOCIAL ADS', value: 'Social Ads' },
+  { name: 'WEDDING', value: 'Wedding' },
+  { name: 'EVENTS', value: 'Events' },
+  { name: 'BIRTHDAY', value: 'Birthdays' },
+  { name: 'MOVIES', value: 'Movies' },
+  { name: 'GRAPHIC', value: 'Graphic' },
+  { name: 'VIDEO', value: 'Video' },
+  { name: 'VIDEOGRAPHY', value: 'Videography' },
+  { name: 'PHOTO', value: 'Photography' },
+  { name: 'DJ', value: 'DJ Films' },
 ];
 
 export default function Portfolio() {
@@ -53,7 +53,7 @@ export default function Portfolio() {
     }
   }
 
-  const filteredProjects = filter === 'all' 
+  const filteredProjects = filter === 'All Work' 
     ? projects 
     : projects.filter(p => p.category === filter);
 
@@ -106,10 +106,18 @@ export default function Portfolio() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className={`${project.color} aspect-[4/3] rounded-3xl flex flex-col justify-end p-8 text-white relative cursor-pointer overflow-hidden group`}
-                  style={project.image_url ? { backgroundImage: `url(${project.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                  className="aspect-[4/3] rounded-3xl flex flex-col justify-end p-8 text-white relative cursor-pointer overflow-hidden group"
+                  style={{ backgroundColor: project.fallback_color || '#1a1a2e' }}
                   onClick={() => setSelectedProject(project)}
                 >
+                  {project.image_url && (
+                    <Image
+                      src={project.image_url}
+                      alt={project.label}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   <div className="absolute top-0 left-[-100%] w-[40%] h-full bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.3)] to-transparent animate-[shimmer_4s_infinite_linear]" />
                   
