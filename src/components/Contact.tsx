@@ -1,12 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [settings, setSettings] = useState({
+    contact_email: 'hello@richkidgraphix.co.ke',
+    contact_whatsapp: '+254 700 000 000'
+  });
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) setSettings(data);
+      })
+      .catch(console.error);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,8 +86,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">EMAIL</p>
-                  <a href="mailto:hello@richkidgraphix.co.ke" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
-                    hello@richkidgraphix.co.ke
+                  <a href={`mailto:${settings.contact_email}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                    {settings.contact_email}
                   </a>
                 </div>
               </div>
@@ -84,8 +97,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">WHATSAPP</p>
-                  <a href="https://wa.me/254700000000" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
-                    +254 700 000 000
+                  <a href={`https://wa.me/${settings.contact_whatsapp.replace(/[^0-9]/g, '')}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                    {settings.contact_whatsapp}
                   </a>
                 </div>
               </div>

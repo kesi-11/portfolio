@@ -1,12 +1,36 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 const skills = [
   'BRAND IDENTITY', 'POSTER DESIGN', 'TYPOGRAPHY', 'SOCIAL MEDIA', 'PACKAGING', 'MOTION GRAPHICS'
 ];
 
+interface Settings {
+  about_text1: string;
+  about_text2: string;
+  about_text3: string;
+  about_badge: string;
+}
+
 export default function About() {
+  const [settings, setSettings] = useState<Settings>({
+    about_text1: 'RichKid Graphix is a Mombasa-based premium design studio built on the belief that every brand deserves world-class visuals — bold, intentional, and unforgettable.',
+    about_text2: 'From street-level poster campaigns to high-end brand identities, I bring a sharp eye, deep craft knowledge, and a relentless pursuit of visual excellence to every project.',
+    about_text3: 'I work with businesses, musicians, creatives, and entrepreneurs who understand that design is not decoration — it\'s strategy.',
+    about_badge: 'GRAPHIC DESIGNER',
+  });
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) setSettings(data);
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <section id="about" className="py-24 bg-[#050505] border-t border-white/10">
       <div className="max-w-screen-2xl mx-auto px-8">
@@ -41,7 +65,7 @@ export default function About() {
             >
               <div className="text-center">
                 <div className="text-7xl mb-6 animate-pulse">✺</div>
-                <div className="inline-block bg-black/70 text-[#C9A84C] text-sm font-bold px-8 py-4 rounded-2xl">GRAPHIC DESIGNER</div>
+                <div className="inline-block bg-black/70 text-[#C9A84C] text-sm font-bold px-8 py-4 rounded-2xl">{settings.about_badge}</div>
               </div>
               <div className="absolute inset-0 bg-[radial-gradient(#C9A84C_1px,transparent_1px)] bg-[length:40px_40px] opacity-10 pointer-events-none" />
             </motion.div>
@@ -54,7 +78,7 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              RichKid Graphix is a Mombasa-based premium design studio built on the belief that every brand deserves world-class visuals — bold, intentional, and unforgettable.
+              {settings.about_text1}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -62,7 +86,7 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              From street-level poster campaigns to high-end brand identities, I bring a sharp eye, deep craft knowledge, and a relentless pursuit of visual excellence to every project.
+              {settings.about_text2}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -70,7 +94,7 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              I work with businesses, musicians, creatives, and entrepreneurs who understand that design is not decoration — it&apos;s strategy.
+              {settings.about_text3}
             </motion.p>
 
             <motion.div
@@ -80,7 +104,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap gap-3 pt-8"
             >
-              {skills.map((skill, index) => (
+              {skills.map((skill) => (
                 <span 
                   key={skill}
                   className="px-6 py-3 bg-white/5 hover:bg-[#C9A84C]/10 text-white hover:text-[#C9A84C] border border-white/10 rounded-full text-sm font-semibold transition-all cursor-pointer"

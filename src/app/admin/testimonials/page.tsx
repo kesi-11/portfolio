@@ -11,6 +11,7 @@ interface Testimonial {
   text: string;
   rating: number;
   display_order: number;
+  status?: string;
 }
 
 const colors = ['bg-red-600', 'bg-amber-600', 'bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-pink-600'];
@@ -19,14 +20,15 @@ export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
-  const [formData, setFormData] = useState({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5 });
+  const [formData, setFormData] = useState({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5, status: 'approved' });
+  const [activeTab, setActiveTab] = useState<'approved' | 'pending'>('approved');
 
   useEffect(() => {
     fetchTestimonials();
   }, []);
 
   async function fetchTestimonials() {
-    const res = await fetch('/api/testimonials');
+    const res = await fetch('/api/testimonials?all=true');
     const data = await res.json();
     setTestimonials(Array.isArray(data) ? data : []);
   }
@@ -49,7 +51,16 @@ export default function TestimonialsPage() {
 
     setIsModalOpen(false);
     setEditingTestimonial(null);
-    setFormData({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5 });
+    setFormData({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5, status: 'approved' });
+    fetchTestimonials();
+  }
+
+  async function handleStatusChange(testimonial: Testimonial, newStatus: string) {
+    await fetch('/api/testimonials', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...testimonial, status: newStatus }),
+    });
     fetchTestimonials();
   }
 
@@ -69,6 +80,7 @@ export default function TestimonialsPage() {
       color: testimonial.color || 'bg-amber-600',
       text: testimonial.text,
       rating: testimonial.rating,
+      status: testimonial.status || 'approved',
     });
     setIsModalOpen(true);
   }
@@ -81,15 +93,30 @@ export default function TestimonialsPage() {
           <p className="text-gray-400 mt-2">Manage client reviews</p>
         </div>
         <button
-          onClick={() => { setIsModalOpen(true); setEditingTestimonial(null); setFormData({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5 }); }}
+          onClick={() => { setIsModalOpen(true); setEditingTestimonial(null); setFormData({ name: '', role: '', initials: '', color: 'bg-amber-600', text: '', rating: 5, status: 'approved' }); }}
           className="px-6 py-3 bg-[#C9A84C] text-black font-semibold rounded-2xl hover:bg-[#E5D4A1] transition-colors"
         >
           Add Review
         </button>
       </div>
 
+      <div className="flex gap-4 mb-6 border-b border-white/10 pb-4">
+        <button 
+          onClick={() => setActiveTab('approved')} 
+          className={`font-semibold ${activeTab === 'approved' ? 'text-[#C9A84C]' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+          Approved
+        </button>
+        <button 
+          onClick={() => setActiveTab('pending')} 
+          className={`font-semibold ${activeTab === 'pending' ? 'text-[#C9A84C]' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+          Pending
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {testimonials.map((testimonial) => (
+        {testimonials.filter(t => (t.status || 'approved') === activeTab).map((testimonial) => (
           <div key={testimonial.id} className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6">
             <div className="flex gap-1 mb-4">
               {[...Array(testimonial.rating)].map((_, i) => (
@@ -107,6 +134,11 @@ export default function TestimonialsPage() {
               </div>
             </div>
             <div className="flex gap-2 mt-6">
+              {activeTab === 'pending' && (
+                <button onClick={() => handleStatusChange(testimonial, 'approved')} className="flex-1 px-4 py-2 bg-green-500/20 text-green-400 rounded-lg text-sm hover:bg-green-500/30 transition-colors">
+                  Approve
+                </button>
+              )}
               <button onClick={() => openEdit(testimonial)} className="flex-1 px-4 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors">
                 Edit
               </button>

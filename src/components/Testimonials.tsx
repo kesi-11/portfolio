@@ -13,9 +13,15 @@ interface Testimonial {
   rating: number;
 }
 
+const colors = ['bg-red-600', 'bg-amber-600', 'bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-pink-600'];
+
 export default function Testimonials() {
   const [reviews, setReviews] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ name: '', role: '', text: '', rating: 5 });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     fetchReviews();
@@ -31,6 +37,34 @@ export default function Testimonials() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleReviewSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmittingReview(true);
+    
+    // Choose random color and gen initials
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    const initials = reviewForm.name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase();
+    
+    await fetch('/api/testimonials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        ...reviewForm, 
+        color: randomColor, 
+        initials,
+        display_order: 999 
+      }),
+    });
+    
+    setSubmittingReview(false);
+    setReviewSubmitted(true);
+    setTimeout(() => {
+      setReviewSubmitted(false);
+      setShowReviewForm(false);
+      setReviewForm({ name: '', role: '', text: '', rating: 5 });
+    }, 5000);
   }
 
   if (loading) {
@@ -114,6 +148,105 @@ export default function Testimonials() {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           className="mt-20 pt-16 border-t border-white/10 text-center max-w-2xl mx-auto"
+        >
+          {!showReviewForm && !reviewSubmitted && (
+            <div>
+              <h3 className="text-2xl font-bold font-['Playfair_Display'] mb-4">Worked with me?</h3>
+              <button 
+                onClick={() => setShowReviewForm(true)}
+                className="px-8 py-4 border border-[#C9A84C]/50 text-[#C9A84C] font-bold rounded-2xl hover:bg-[#C9A84C]/10 transition-colors"
+              >
+                LEAVE A REVIEW
+              </button>
+            </div>
+          )}
+
+          {reviewSubmitted && (
+            <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-6 rounded-2xl">
+              <i className="fas fa-check-circle text-3xl mb-4" />
+              <h3 className="text-xl font-bold mb-2">Thank you for your review!</h3>
+              <p>Your testimonial has been submitted successfully and is pending approval.</p>
+            </div>
+          )}
+
+          {showReviewForm && !reviewSubmitted && (
+            <div className="bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl text-left">
+              <h3 className="text-2xl font-bold font-['Playfair_Display'] mb-6 text-center">Write a Review</h3>
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold tracking-widest text-gray-400 mb-2">NAME</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={reviewForm.name}
+                      onChange={e => setReviewForm({...reviewForm, name: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-white outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold tracking-widest text-gray-400 mb-2">COMPANY / ROLE</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={reviewForm.role}
+                      onChange={e => setReviewForm({...reviewForm, role: e.target.value})}
+                      placeholder="e.g. CEO, XYZ Studio"
+                      className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-white outline-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-widest text-gray-400 mb-2">RATING</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        className={`text-3xl ${reviewForm.rating >= star ? 'text-[#C9A84C]' : 'text-gray-600'}`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-widest text-gray-400 mb-2">YOUR EXPERIENCE</label>
+                  <textarea 
+                    required
+                    rows={4}
+                    value={reviewForm.text}
+                    onChange={e => setReviewForm({...reviewForm, text: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-white outline-none resize-none"
+                  />
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowReviewForm(false)}
+                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-colors"
+                  >
+                    CANCEL
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submittingReview}
+                    className="flex-1 py-3 bg-[#C9A84C] hover:bg-[#E5D4A1] text-black font-bold rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    {submittingReview ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>
