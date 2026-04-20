@@ -36,8 +36,16 @@ export default function ContactPage() {
 
   async function handleDelete(id: number) {
     if (confirm('Delete this message?')) {
-      await fetch(`/api/contact?id=${id}`, { method: 'DELETE' });
-      fetchContacts();
+      const res = await fetch('/api/contact', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        fetchContacts();
+      } else {
+        alert('Failed to delete message');
+      }
     }
   }
 

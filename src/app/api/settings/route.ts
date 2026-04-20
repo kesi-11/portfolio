@@ -1,42 +1,58 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
-import { checkAdminAuth } from '@/lib/auth';
 
 export async function GET() {
   const { data, error } = await supabase
-    .from('site_settings')
+    .from('hero_settings')
     .select('*')
     .limit(1)
     .single();
-  
+
   if (error) {
     if (error.code === 'PGRST116') {
-      // No rows returned
-      return NextResponse.json(null);
+      return NextResponse.json({});
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  
-  return NextResponse.json(data);
+
+  return NextResponse.json(data || {});
 }
 
 export async function PUT(request: Request) {
-  if (!(await checkAdminAuth())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   const body = await request.json();
   
-  // We assume there's only one settings row mapping to ID 1
-  const { data, error } = await supabase
-    .from('site_settings')
-    .update({ ...body, updated_at: new Date().toISOString() })
-    .eq('id', 1)
-    .select()
+  // Get current settings
+  const { data: existing } = await supabase
+    .from('hero_settings')
+    .select('id')
+    .limit(1)
     .single();
+
+  let result;
   
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (existing) {
+    // Update existing
+    result = await supabase
+      .from('hero_settings')
+      .update(body)
+      .eq('id', existing.id)
+      .select()
+      .single();
+  } else {
+    // Insert new
+    result = await supabase
+      .from('hero_settings')
+      .insert(body)
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    return NextResponse.json({ error: result.error.message }, { status: 500 });
+  }
 
   revalidatePath('/');
-  
-  return NextResponse.json(data);
+
+  return NextResponse.json(result.data);
 }
