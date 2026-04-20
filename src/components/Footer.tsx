@@ -24,12 +24,23 @@ export default function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="flex justify-center gap-8 mt-8 text-sm"
+          className="flex justify-center gap-8 mt-8"
         >
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">INSTAGRAM</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">BEHANCE</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">LINKEDIN</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">WHATSAPP</a>
+          <a href="https://www.instagram.com/richkidgraphics254?igsh=MWVkZHM5MGNzNTl0aw==" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C9A84C] transition-colors text-2xl" aria-label="Instagram">
+            <i className="fab fa-instagram" />
+          </a>
+          <a href="https://youtube.com/@richkidfilmproduction?si=aGW4-Inp5uo6OMzO" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C9A84C] transition-colors text-2xl" aria-label="YouTube">
+            <i className="fab fa-youtube" />
+          </a>
+          <a href="https://www.tiktok.com/@richkid.graphics?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C9A84C] transition-colors text-2xl" aria-label="TikTok">
+            <i className="fab fa-tiktok" />
+          </a>
+          <a href="https://x.com/YOUNGRichkid254" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C9A84C] transition-colors text-2xl" aria-label="X (Twitter)">
+            <i className="fab fa-x-twitter" />
+          </a>
+          <a href="https://www.facebook.com/share/18TsAExZSC/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C9A84C] transition-colors text-2xl" aria-label="Facebook">
+            <i className="fab fa-facebook" />
+          </a>
         </motion.div>
         
         <p className="text-xs text-gray-600 mt-16">
