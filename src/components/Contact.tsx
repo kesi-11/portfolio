@@ -1,36 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [settings, setSettings] = useState({
-    contact_email: 'hello@richkidgraphix.co.ke',
-    contact_whatsapp: '+254 700 000 000'
-  });
 
-  useEffect(() => {
-    fetch('/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data) setSettings(data);
-      })
-      .catch(console.error);
-  }, []);
+  const whatsappNumber = '254740639494';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
 
     try {
+      // Save to database
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+
+      // Send to WhatsApp
+      const whatsappMessage = `*New Project Brief*%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Service:* ${formData.service}%0A*Message:* ${formData.message}`;
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+      
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank');
+
       setSubmitted(true);
       setFormData({ name: '', email: '', service: '', message: '' });
       setTimeout(() => setSubmitted(false), 3000);
@@ -54,14 +52,14 @@ export default function Contact() {
               <span className="uppercase text-xs tracking-[2px] text-[#C9A84C] font-bold">CONTACT</span>
               <div className="absolute w-16 h-0.5 bg-gradient-to-r from-[#C9A84C] to-transparent bottom-[-8px]" />
             </div>
-            
+
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="text-5xl md:text-6xl font-bold font-['Playfair_Display'] mt-4"
             >
-              Let&apos;s Build Something<br />Extraordinary Together.
+              Let&apos;s Build Something<br />Extraordinary together.
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -72,7 +70,7 @@ export default function Contact() {
             >
               Ready to elevate your brand? Fill in the form and I&apos;ll get back to you within 24 hours with a custom proposal for your project.
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -86,8 +84,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">EMAIL</p>
-                  <a href={`mailto:${settings.contact_email}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors">
-                    {settings.contact_email}
+                  <a href="mailto:hello@richkidgraphix.co.ke" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                    hello@richkidgraphix.co.ke
                   </a>
                 </div>
               </div>
@@ -97,8 +95,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">WHATSAPP</p>
-                  <a href={`https://wa.me/${settings.contact_whatsapp.replace(/[^0-9]/g, '')}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors">
-                    {settings.contact_whatsapp}
+                  <a href="https://wa.me/254740639494" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                    +254 740 639 494
                   </a>
                 </div>
               </div>
@@ -118,31 +116,31 @@ export default function Contact() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">YOUR NAME</label>
-                <input 
-                  type="text" 
-                  placeholder="Full name" 
+                <input
+                  type="text"
+                  placeholder="Full name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500" 
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500"
                 />
               </div>
               <div>
                 <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">EMAIL / WHATSAPP</label>
-                <input 
-                  type="text" 
-                  placeholder="Contact info" 
+                <input
+                  type="text"
+                  placeholder="Contact info"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500" 
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500"
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">SERVICE REQUIRED</label>
-              <select 
+              <select
                 className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white"
                 value={formData.service}
                 onChange={(e) => setFormData({ ...formData, service: e.target.value })}
@@ -152,21 +150,23 @@ export default function Contact() {
                 <option value="Brand Identity Pack">Brand Identity Pack</option>
                 <option value="Event Campaign">Event Campaign</option>
                 <option value="Full Visual System">Full Visual System</option>
+                <option value="Logo Design">Logo Design</option>
+                <option value="Social Media Kit">Social Media Kit</option>
               </select>
             </div>
-            
+
             <div>
               <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">PROJECT BRIEF</label>
-              <textarea 
-                placeholder="Tell me about your project, timeline, and references..." 
+              <textarea
+                placeholder="Tell me about your project, timeline, and references..."
                 rows={6}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500 resize-none"
               />
             </div>
-            
-            <button 
+
+            <button
               type="submit"
               disabled={submitting || submitted}
               className="w-full py-8 bg-gradient-to-r from-[#C9A84C] to-[#E5D4A1] text-black font-bold text-2xl rounded-3xl flex items-center justify-center gap-4 hover:scale-105 transition-transform disabled:opacity-50"
