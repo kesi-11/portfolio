@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ImageUpload from '@/components/ImageUpload';
 
 interface SiteSettings {
   about_text1: string;
@@ -9,6 +10,7 @@ interface SiteSettings {
   about_badge: string;
   contact_email: string;
   contact_whatsapp: string;
+  about_image_url?: string;
 }
 
 export default function SettingsPage() {
@@ -18,7 +20,8 @@ export default function SettingsPage() {
     about_text3: '',
     about_badge: '',
     contact_email: '',
-    contact_whatsapp: ''
+    contact_whatsapp: '',
+    about_image_url: ''
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -100,6 +103,14 @@ export default function SettingsPage() {
                 onChange={(e) => setSettings({ ...settings, about_badge: e.target.value })}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors"
                 placeholder="GRAPHIC DESIGNER"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">About Section Image (Replaces spinning badge UI)</label>
+              <ImageUpload
+                value={settings.about_image_url || ''}
+                onChange={(url) => setSettings({ ...settings, about_image_url: url })}
               />
             </div>
 

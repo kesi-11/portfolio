@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
+import { checkAdminAuth } from '@/lib/auth';
 
 export async function GET() {
   const { data, error } = await supabase
@@ -13,6 +14,8 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  if (!(await checkAdminAuth())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  
   const body = await request.json();
   const { data, error } = await supabase
     .from('hero_settings')

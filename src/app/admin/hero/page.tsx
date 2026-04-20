@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ImageUpload from '@/components/ImageUpload';
 
 interface HeroSettings {
   id: number;
@@ -12,6 +13,7 @@ interface HeroSettings {
   stat2_value: string;
   stat3_label: string;
   stat3_value: string;
+  hero_image_url?: string;
 }
 
 export default function HeroPage() {
@@ -25,6 +27,7 @@ export default function HeroPage() {
     stat2_value: '',
     stat3_label: '',
     stat3_value: '',
+    hero_image_url: '',
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -151,6 +154,14 @@ export default function HeroPage() {
               />
             </div>
           </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-6">
+          <h3 className="text-lg font-bold mb-4">Hero Image (Replaces Gold &quot;R&quot; tile)</h3>
+          <ImageUpload
+            value={settings.hero_image_url || ''}
+            onChange={(url) => setSettings({ ...settings, hero_image_url: url })}
+          />
         </div>
 
         <div className="border-t border-white/10 pt-6">

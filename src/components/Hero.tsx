@@ -37,6 +37,15 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
 }
 
 export default function Hero() {
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/hero')
+      .then(r => r.json())
+      .then(d => { if(d) setSettings(d); })
+      .catch(console.error);
+  }, []);
+
   return (
     <section className="min-h-screen flex items-center relative overflow-hidden bg-[#050505] pt-24 pb-20 md:pt-32">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,#111111_70%)]" />
@@ -135,12 +144,20 @@ export default function Hero() {
             </div>
           </div>
           <div className="relative z-10 bg-white/5 backdrop-blur-3xl border border-white/10 p-8 rounded-3xl shadow-2xl">
-            <div className="w-full aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#050505] rounded-2xl flex items-center justify-center">
-              <span className="text-[#C9A84C]/30 text-[10rem] font-['Playfair_Display']">R</span>
-            </div>
+            {settings?.hero_image_url ? (
+              <img 
+                src={settings.hero_image_url} 
+                alt="Hero Visual" 
+                className="w-full aspect-square object-cover rounded-2xl shadow-xl"
+              />
+            ) : (
+              <div className="w-full aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#050505] rounded-2xl flex items-center justify-center">
+                <span className="text-[#C9A84C]/30 text-[10rem] font-['Playfair_Display']">R</span>
+              </div>
+            )}
             <div className="absolute -bottom-4 -right-4 bg-black text-[#C9A84C] text-xs font-bold px-6 py-3 rounded-full flex items-center gap-2 shadow-xl">
               <i className="fas fa-fire" />
-              LIVE ANIMATION PREVIEW
+              {settings?.hero_image_url ? 'FEATURED DESIGN' : 'LIVE ANIMATION PREVIEW'}
             </div>
           </div>
         </div>

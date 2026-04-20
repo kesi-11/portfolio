@@ -12,6 +12,7 @@ interface Settings {
   about_text2: string;
   about_text3: string;
   about_badge: string;
+  about_image_url?: string;
 }
 
 export default function About() {
@@ -63,10 +64,18 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-12 bg-gradient-to-br from-[#C9A84C]/10 to-transparent border border-[#C9A84C]/20 rounded-3xl h-96 flex items-center justify-center relative overflow-hidden"
             >
-              <div className="text-center">
-                <div className="text-7xl mb-6 animate-pulse">✺</div>
-                <div className="inline-block bg-black/70 text-[#C9A84C] text-sm font-bold px-8 py-4 rounded-2xl">{settings.about_badge}</div>
-              </div>
+              {settings.about_image_url ? (
+                <img 
+                  src={settings.about_image_url} 
+                  alt="About" 
+                  className="w-full h-full object-cover rounded-3xl z-10"
+                />
+              ) : (
+                <div className="text-center z-10">
+                  <div className="text-7xl mb-6 animate-pulse">✺</div>
+                  <div className="inline-block bg-black/70 text-[#C9A84C] text-sm font-bold px-8 py-4 rounded-2xl">{settings.about_badge}</div>
+                </div>
+              )}
               <div className="absolute inset-0 bg-[radial-gradient(#C9A84C_1px,transparent_1px)] bg-[length:40px_40px] opacity-10 pointer-events-none" />
             </motion.div>
           </div>
