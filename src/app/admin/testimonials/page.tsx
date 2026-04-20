@@ -96,7 +96,7 @@ export default function TestimonialsPage() {
                 <span key={i} className="text-[#C9A84C]">★</span>
               ))}
             </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">&ldquo;{testimonial.text.slice(0, 100)}...&rdquo;</p>
+            <p className="text-gray-300 mb-6 leading-relaxed">&ldquo;{testimonial.text.length > 100 ? `${testimonial.text.slice(0, 100)}...` : testimonial.text}&rdquo;</p>
             <div className="flex items-center gap-4">
               <div className={`w-10 h-10 ${testimonial.color || 'bg-amber-600'} rounded-2xl flex items-center justify-center text-xs font-bold`}>
                 {testimonial.initials || testimonial.name.charAt(0)}
@@ -128,7 +128,7 @@ export default function TestimonialsPage() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value, initials: e.target.value.split(' ').map(n => n[0]).join('') })}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value, initials: e.target.value.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase() })}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
                   required
                 />

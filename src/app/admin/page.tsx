@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'richkid2026';
+
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -10,7 +12,7 @@ export default function AdminLogin() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'richkid2026') {
+    if (password === ADMIN_PASSWORD) {
       document.cookie = 'admin_auth=valid; path=/; max-age=86400';
       router.push('/admin/dashboard');
     } else {

@@ -34,7 +34,7 @@ const filters = [
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Work');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
