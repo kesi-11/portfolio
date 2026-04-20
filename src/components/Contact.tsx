@@ -40,9 +40,9 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-24 bg-[#050505] border-t border-white/10">
-      <div className="max-w-screen-2xl mx-auto px-8">
-        <div className="grid lg:grid-cols-2 gap-20">
+    <section id="contact" className="py-12 md:py-24 bg-[#050505] border-t border-white/10">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-20">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -57,7 +57,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-5xl md:text-6xl font-bold font-['Playfair_Display'] mt-4"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold font-['Playfair_Display'] mt-4"
             >
               Let&apos;s Build Something<br />Extraordinary together.
             </motion.h2>
@@ -66,7 +66,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-gray-400 mt-8 max-w-md"
+              className="text-sm md:text-gray-400 mt-4 md:mt-8 max-w-md"
             >
               Ready to elevate your brand? Fill in the form and I&apos;ll get back to you within 24 hours with a custom proposal for your project.
             </motion.p>
@@ -76,31 +76,31 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="mt-16 space-y-8"
+              className="mt-8 md:mt-16 space-y-4 md:space-y-8"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center">
-                  <i className="fas fa-envelope text-2xl text-[#C9A84C]" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-envelope text-xl md:text-2xl text-[#C9A84C]" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">EMAIL</p>
-                  <a href="mailto:hello@richkidgraphix.co.ke" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                  <p className="font-semibold text-xs md:text-sm">EMAIL</p>
+                  <a href="mailto:hello@richkidgraphix.co.ke" className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
                     hello@richkidgraphix.co.ke
                   </a>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center">
-                  <i className="fab fa-whatsapp text-2xl text-[#C9A84C]" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fab fa-whatsapp text-xl md:text-2xl text-[#C9A84C]" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">WHATSAPP</p>
-                  <a href="https://wa.me/254740639494" className="text-gray-300 hover:text-[#C9A84C] transition-colors">
+                  <p className="font-semibold text-xs md:text-sm">WHATSAPP</p>
+                  <a href="https://wa.me/254740639494" className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
                     +254 740 639 494
                   </a>
                 </div>
               </div>
-              <div className="text-xs uppercase font-bold tracking-widest text-gray-500">
+              <div className="text-[10px] md:text-xs uppercase font-bold tracking-widest text-gray-500">
                 BASED IN MOMBASA, KENYA • AVAILABLE WORLDWIDE
               </div>
             </motion.div>
@@ -111,9 +111,9 @@ export default function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             onSubmit={handleSubmit}
-            className="space-y-8"
+            className="space-y-4 md:space-y-8"
           >
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">YOUR NAME</label>
                 <input
@@ -122,7 +122,7 @@ export default function Contact() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500"
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white placeholder-gray-500"
                 />
               </div>
               <div>
@@ -133,7 +133,7 @@ export default function Contact() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500"
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white placeholder-gray-500"
                 />
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function Contact() {
             <div>
               <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">SERVICE REQUIRED</label>
               <select
-                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white"
+                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white"
                 value={formData.service}
                 onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               >
@@ -162,14 +162,14 @@ export default function Contact() {
                 rows={6}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-3xl px-8 py-7 text-lg outline-none text-white placeholder-gray-500 resize-none"
+                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white placeholder-gray-500 resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting || submitted}
-              className="w-full py-8 bg-gradient-to-r from-[#C9A84C] to-[#E5D4A1] text-black font-bold text-2xl rounded-3xl flex items-center justify-center gap-4 hover:scale-105 transition-transform disabled:opacity-50"
+              className="w-full py-6 md:py-8 bg-gradient-to-r from-[#C9A84C] to-[#E5D4A1] text-black font-bold text-base md:text-2xl rounded-2xl md:rounded-3xl flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform disabled:opacity-50"
             >
               {submitting ? 'SENDING...' : submitted ? 'SENT!' : 'SEND BRIEF'}
               <i className="fas fa-paper-plane" />
