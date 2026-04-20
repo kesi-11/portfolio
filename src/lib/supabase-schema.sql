@@ -1,5 +1,6 @@
 -- RichKid Graphix Portfolio - Supabase Database Schema
--- Run this in Supabase Dashboard → SQL Editor
+-- Run this ENTIRE script in Supabase Dashboard → SQL Editor
+-- Copy everything below and paste in SQL Editor
 
 -- Portfolio table
 CREATE TABLE IF NOT EXISTS portfolio (
@@ -15,7 +16,9 @@ CREATE TABLE IF NOT EXISTS portfolio (
 );
 
 ALTER TABLE portfolio ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read portfolio" ON portfolio;
 CREATE POLICY "Public can read portfolio" ON portfolio FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth can manage portfolio" ON portfolio;
 CREATE POLICY "Auth can manage portfolio" ON portfolio FOR ALL USING (auth.role() = 'authenticated');
 
 -- Services table
@@ -29,6 +32,7 @@ CREATE TABLE IF NOT EXISTS services (
 );
 
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read services" ON services;
 CREATE POLICY "Public can read services" ON services FOR SELECT USING (true);
 
 -- Testimonials table
@@ -42,6 +46,7 @@ CREATE TABLE IF NOT EXISTS testimonials (
 );
 
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read testimonials" ON testimonials;
 CREATE POLICY "Public can read testimonials" ON testimonials FOR SELECT USING (true);
 
 -- Rate Card table
@@ -55,19 +60,24 @@ CREATE TABLE IF NOT EXISTS rate_card (
 );
 
 ALTER TABLE rate_card ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read rate_card" ON rate_card;
 CREATE POLICY "Public can read rate_card" ON rate_card FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth can manage rate_card" ON rate_card;
 CREATE POLICY "Auth can manage rate_card" ON rate_card FOR ALL USING (auth.role() = 'authenticated');
 
--- Hero settings table
+-- Hero settings table (with correct column names)
 CREATE TABLE IF NOT EXISTS hero_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT,
-  subtitle TEXT,
-  cta_text TEXT,
-  cta_link TEXT
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  hero_title TEXT,
+  hero_subtitle TEXT,
+  hero_cta_text TEXT,
+  hero_cta_link TEXT,
+  hero_image_url TEXT
 );
 
 ALTER TABLE hero_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read hero" ON hero_settings;
 CREATE POLICY "Public can read hero" ON hero_settings FOR SELECT USING (true);
 
 -- Contact submissions table
@@ -83,10 +93,16 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
 );
 
 ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can insert contact" ON contact_submissions;
 CREATE POLICY "Public can insert contact" ON contact_submissions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Auth can manage contact" ON contact_submissions;
 CREATE POLICY "Auth can manage contact" ON contact_submissions FOR ALL USING (auth.role() = 'authenticated');
 
--- Insert default hero settings
-INSERT INTO hero_settings (title, subtitle, cta_text, cta_link)
-VALUES ('Premium Graphic Design', 'Mombasa''s Premier Design Studio', 'View Our Work', '#portfolio')
-ON CONFLICT DO NOTHING;
+-- Insert default hero settings (only if table is empty)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM hero_settings) THEN
+    INSERT INTO hero_settings (hero_title, hero_subtitle, hero_cta_text, hero_cta_link)
+    VALUES ('Premium Graphic Design', 'Mombasa''s Premier Design Studio', 'View Our Work', '#portfolio');
+  END IF;
+END $$;
