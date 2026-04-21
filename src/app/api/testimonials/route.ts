@@ -57,19 +57,28 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await checkAdminAuth())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+if (!(await checkAdminAuth())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  
-  if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-  
-  const { error } = await supabase
-    .from('testimonials')
-    .delete()
-    .eq('id', id);
-  
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  revalidatePath('/');
-  return NextResponse.json({ success: true });
+const body = await request.json().catch(() => ({}));
+const { id } = body || {};
+
+if (!id) {
+const { searchParams } = new URL(request.url);
+const searchId = searchParams.get('id');
+if (!searchId) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+return handleDelete(searchId);
+}
+
+return handleDelete(id);
+}
+
+async function handleDelete(id: string | number) {
+const { error } = await supabase
+.from('testimonials')
+.delete()
+.eq('id', id);
+
+if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+revalidatePath('/');
+return NextResponse.json({ success: true });
 }

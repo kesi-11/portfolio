@@ -39,33 +39,49 @@ export default function Testimonials() {
     }
   }
 
-  async function handleReviewSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmittingReview(true);
-    
-    // Choose random color and gen initials
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    const initials = reviewForm.name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase();
-    
-    await fetch('/api/testimonials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        ...reviewForm, 
-        color: randomColor, 
-        initials,
-        display_order: 999 
-      }),
-    });
-    
-    setSubmittingReview(false);
-    setReviewSubmitted(true);
-    setTimeout(() => {
-      setReviewSubmitted(false);
-      setShowReviewForm(false);
-      setReviewForm({ name: '', role: '', text: '', rating: 5 });
-    }, 5000);
-  }
+async function handleReviewSubmit(e: React.FormEvent) {
+e.preventDefault();
+setSubmittingReview(true);
+
+// Choose random color and gen initials
+const randomColor = colors[Math.floor(Math.random() * colors.length)];
+const initials = reviewForm.name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase();
+
+try {
+const res = await fetch('/api/testimonials', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+...reviewForm,
+color: randomColor,
+initials,
+display_order: 999,
+status: 'pending' // Submissions are always pending until admin approves
+}),
+});
+
+const data = await res.json();
+
+if (res.ok) {
+setSubmittingReview(false);
+setReviewSubmitted(true);
+setShowReviewForm(false);
+setReviewForm({ name: '', role: '', text: '', rating: 5 });
+// Refresh reviews after 5 seconds
+setTimeout(() => {
+setReviewSubmitted(false);
+fetchReviews();
+}, 5000);
+} else {
+alert('Failed to submit review: ' + (data.error || 'Unknown error'));
+setSubmittingReview(false);
+}
+} catch (error) {
+console.error('Review submission error:', error);
+alert('Something went wrong. Please try again.');
+setSubmittingReview(false);
+}
+}
 
   if (loading) {
     return (

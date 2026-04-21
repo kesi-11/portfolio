@@ -64,12 +64,18 @@ export default function TestimonialsPage() {
     fetchTestimonials();
   }
 
-  async function handleDelete(id: number) {
-    if (confirm('Delete this testimonial?')) {
-      await fetch(`/api/testimonials?id=${id}`, { method: 'DELETE' });
-      fetchTestimonials();
-    }
-  }
+async function handleDelete(id: number) {
+if (confirm('Delete this testimonial?')) {
+const res = await fetch('/api/testimonials', {
+method: 'DELETE',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ id }),
+});
+if (res.ok) {
+fetchTestimonials();
+}
+}
+}
 
   function openEdit(testimonial: Testimonial) {
     setEditingTestimonial(testimonial);

@@ -37,17 +37,27 @@ CREATE POLICY "Public can read services" ON services FOR SELECT USING (true);
 
 -- Testimonials table
 CREATE TABLE IF NOT EXISTS testimonials (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  name TEXT NOT NULL,
-  comment TEXT,
-  rating INTEGER DEFAULT 5,
-  image_url TEXT
+id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+name TEXT NOT NULL,
+role TEXT DEFAULT '',
+initials TEXT DEFAULT '',
+color TEXT DEFAULT 'bg-amber-600',
+text TEXT NOT NULL,
+rating INTEGER DEFAULT 5,
+image_url TEXT,
+status TEXT DEFAULT 'pending',
+display_order INTEGER DEFAULT 0
 );
 
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public can read testimonials" ON testimonials;
 CREATE POLICY "Public can read testimonials" ON testimonials FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public can insert testimonials" ON testimonials;
+CREATE POLICY "Public can insert testimonials" ON testimonials FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Auth can manage testimonials" ON testimonials;
+CREATE POLICY "Auth can manage testimonials" ON testimonials FOR ALL USING (auth.role() = 'authenticated');
 
 -- Rate Card table
 CREATE TABLE IF NOT EXISTS rate_card (
@@ -107,6 +117,73 @@ SELECT 1 FROM information_schema.columns
 WHERE table_name = 'hero_settings' AND column_name = 'site_logo'
 ) THEN
 ALTER TABLE hero_settings ADD COLUMN site_logo TEXT;
+END IF;
+END $$;
+
+-- Add missing columns to testimonials if they don't exist
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'testimonials' AND column_name = 'status'
+) THEN
+ALTER TABLE testimonials ADD COLUMN status TEXT DEFAULT 'pending';
+END IF;
+END $$;
+
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'testimonials' AND column_name = 'role'
+) THEN
+ALTER TABLE testimonials ADD COLUMN role TEXT DEFAULT '';
+END IF;
+END $$;
+
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'testimonials' AND column_name = 'initials'
+) THEN
+ALTER TABLE testimonials ADD COLUMN initials TEXT DEFAULT '';
+END IF;
+END $$;
+
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'testimonials' AND column_name = 'color'
+) THEN
+ALTER TABLE testimonials ADD COLUMN color TEXT DEFAULT 'bg-amber-600';
+END IF;
+END $$;
+
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'testimonials' AND column_name = 'display_order'
+) THEN
+ALTER TABLE testimonials ADD COLUMN display_order INTEGER DEFAULT 0;
+END IF;
+END $$;
+
+-- Insert default rate card items (only if table is empty)
+DO $$
+BEGIN
+IF NOT EXISTS (SELECT 1 FROM rate_card) THEN
+INSERT INTO rate_card (service, price, unit, display_order) VALUES
+('Logo Design', 5000, 'project', 1),
+('Business Card Design', 3000, 'set', 2),
+('Flyer Design', 4000, 'design', 3),
+('Poster Design', 5000, 'design', 4),
+('Social Media Kit', 8000, 'package', 5),
+('Brand Identity', 15000, 'package', 6),
+('Banner Design', 3500, 'design', 7),
+('Wedding Card Design', 6000, 'design', 8);
 END IF;
 END $$;
 
