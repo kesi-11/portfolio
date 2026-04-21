@@ -24,13 +24,24 @@ export default function LogoPage() {
   async function handleSave() {
     if (!logo) return;
     setSaving(true);
-    await fetch('/api/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ site_logo: logo }),
-    });
-    setSaving(false);
-    alert('Logo saved successfully!');
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ site_logo: logo }),
+      });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to save logo');
+      }
+
+      alert('Logo saved successfully!');
+    } catch (error: any) {
+      alert('Error: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleDelete() {

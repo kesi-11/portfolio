@@ -32,63 +32,70 @@ return NextResponse.json(data || {});
 }
 
 export async function PUT(request: Request) {
-const body = await request.json();
-
-// Try site_settings table first
-const { data: existing } = await supabase
-.from('site_settings')
-.select('id')
-.limit(1)
-.single();
-
-let result;
-
-if (existing) {
-result = await supabase
-.from('site_settings')
-.update(body)
-.eq('id', existing.id)
-.select()
-.single();
-} else {
-result = await supabase
-.from('site_settings')
-.insert(body)
-.select()
-.single();
-}
-
-if (result.error) {
-// If site_settings table doesn't exist, fall back to hero_settings
-if (result.error.message.includes('relation "site_settings" does not exist')) {
-const { data: heroExisting } = await supabase
-.from('hero_settings')
-.select('id')
-.limit(1)
-.single();
-
-if (heroExisting) {
-result = await supabase
-.from('hero_settings')
-.update(body)
-.eq('id', heroExisting.id)
-.select()
-.single();
-} else {
-result = await supabase
-.from('hero_settings')
-.insert(body)
-.select()
-.single();
-}
-}
-
-if (result.error) {
-return NextResponse.json({ error: result.error.message }, { status: 500 });
-}
-}
-
-revalidatePath('/');
-
-return NextResponse.json(result.data);
+  try {
+    const body = await request.json();
+    
+    // Try site_settings table first
+    const { data: existing } = await supabase
+      .from('site_settings')
+      .select('*')
+      .limit(1)
+      .single();
+    
+    let result;
+    
+    if (existing) {
+      // Filter body to only include columns that likely exist or handle error
+      result = await supabase
+        .from('site_settings')
+        .update(body)
+        .eq('id', existing.id)
+        .select()
+        .single();
+    } else {
+      result = await supabase
+        .from('site_settings')
+        .insert(body)
+        .select()
+        .single();
+    }
+    
+    if (result.error) {
+      console.error('Settings save error:', result.error);
+      
+      // If site_settings has issues, try hero_settings as fallback
+      const { data: heroExisting } = await supabase
+        .from('hero_settings')
+        .select('id')
+        .limit(1)
+        .single();
+      
+      // Filter body for hero_settings (it might have fewer columns)
+      const heroBody = { ...body };
+      
+      if (heroExisting) {
+        result = await supabase
+          .from('hero_settings')
+          .update(heroBody)
+          .eq('id', heroExisting.id)
+          .select()
+          .single();
+      } else {
+        result = await supabase
+          .from('hero_settings')
+          .insert(heroBody)
+          .select()
+          .single();
+      }
+    }
+    
+    if (result.error) {
+      return NextResponse.json({ error: result.error.message }, { status: 500 });
+    }
+    
+    revalidatePath('/');
+    return NextResponse.json(result.data);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

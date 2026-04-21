@@ -40,17 +40,23 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const body = await request.json();
-  const { id } = body || {};
+  try {
+    const body = await request.json().catch(() => ({}));
+    let id = body?.id;
 
-  if (!id) {
-    const { searchParams } = new URL(request.url);
-    const searchId = searchParams.get('id');
-    if (!searchId) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-    return handleDelete(searchId);
+    if (!id) {
+      const { searchParams } = new URL(request.url);
+      id = searchParams.get('id');
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID required' }, { status: 400 });
+    }
+
+    return await handleDelete(id);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  return handleDelete(id);
 }
 
 async function handleDelete(id: string | number) {
