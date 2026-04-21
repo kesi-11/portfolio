@@ -80,10 +80,10 @@ return () => window.removeEventListener('scroll', handleScroll);
 
         <div className="flex items-center gap-4">
           <a
-            href="#services"
-            className="px-6 py-2.5 text-sm font-semibold border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#050505] rounded-full flex items-center gap-2 transition-all"
+            href="#contact"
+            className="px-6 py-2.5 text-sm font-semibold border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#050505] rounded-full flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(201,168,76,0.2)]"
           >
-            <i className="fas fa-arrow-right" />
+            <i className="fas fa-paper-plane" />
             HIRE ME
           </a>
           

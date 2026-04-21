@@ -103,8 +103,8 @@ export default function Hero() {
               <i className="fas fa-arrow-right" />
             </a>
             <a
-              href="#pricing"
-              className="px-6 md:px-10 py-3 md:py-6 border border-[#C9A84C] text-[#C9A84C] font-semibold text-sm md:text-lg rounded-full flex items-center gap-2 md:gap-3 hover:bg-[#C9A84C] hover:text-black transition-all"
+              href="#services"
+              className="px-6 md:px-10 py-3 md:py-6 border border-[#C9A84C] text-[#C9A84C] font-semibold text-sm md:text-lg rounded-full flex items-center gap-2 md:gap-3 hover:bg-[#C9A84C] hover:text-black transition-all shadow-[0_0_15px_rgba(201,168,76,0.1)]"
             >
               SEE RATES
             </a>
