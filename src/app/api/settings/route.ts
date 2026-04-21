@@ -45,10 +45,14 @@ export async function PUT(request: Request) {
     let result;
     
     if (existing) {
-      // Filter body to only include columns that likely exist or handle error
+      // MERGE body with existing data to prevent data loss
+      const updatedData = { ...existing, ...body };
+      delete updatedData.id; // Don't try to update the ID column
+      delete updatedData.created_at;
+      
       result = await supabase
         .from('site_settings')
-        .update(body)
+        .update(updatedData)
         .eq('id', existing.id)
         .select()
         .single();
@@ -63,27 +67,27 @@ export async function PUT(request: Request) {
     if (result.error) {
       console.error('Settings save error:', result.error);
       
-      // If site_settings has issues, try hero_settings as fallback
+      // Fallback to hero_settings if site_settings fails
       const { data: heroExisting } = await supabase
         .from('hero_settings')
-        .select('id')
+        .select('*')
         .limit(1)
         .single();
       
-      // Filter body for hero_settings (it might have fewer columns)
-      const heroBody = { ...body };
-      
       if (heroExisting) {
+        const updatedHero = { ...heroExisting, ...body };
+        delete updatedHero.id;
+        
         result = await supabase
           .from('hero_settings')
-          .update(heroBody)
+          .update(updatedHero)
           .eq('id', heroExisting.id)
           .select()
           .single();
       } else {
         result = await supabase
           .from('hero_settings')
-          .insert(heroBody)
+          .insert(body)
           .select()
           .single();
       }

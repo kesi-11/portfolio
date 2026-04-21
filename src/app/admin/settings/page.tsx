@@ -33,9 +33,15 @@ export default function SettingsPage() {
   }, []);
 
   async function fetchSettings() {
-    const res = await fetch('/api/settings');
-    const data = await res.json();
-    if (data) setSettings(data);
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        setSettings(prev => ({ ...prev, ...data }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch settings:', err);
+    }
   }
 
   async function handleSave() {

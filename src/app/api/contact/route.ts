@@ -60,10 +60,13 @@ export async function DELETE(request: Request) {
 }
 
 async function handleDelete(id: string | number) {
+  // Convert to number if it's a numeric string to avoid type mismatch errors
+  const finalId = typeof id === 'string' && !isNaN(Number(id)) ? Number(id) : id;
+
   const { error } = await supabase
     .from('contact_submissions')
     .delete()
-    .eq('id', id);
+    .eq('id', finalId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
