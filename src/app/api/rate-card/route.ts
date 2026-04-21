@@ -55,19 +55,28 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+const body = await request.json().catch(() => ({}));
+const { id } = body || {};
 
-  if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+if (!id) {
+const { searchParams } = new URL(request.url);
+const searchId = searchParams.get('id');
+if (!searchId) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+return handleDelete(searchId);
+}
 
-  const { error } = await supabase
-    .from('rate_card')
-    .delete()
-    .eq('id', Number(id));
+return handleDelete(id);
+}
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+async function handleDelete(id: string | number) {
+const { error } = await supabase
+.from('rate_card')
+.delete()
+.eq('id', Number(id));
 
-  revalidatePath('/');
+if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ success: true });
+revalidatePath('/');
+
+return NextResponse.json({ success: true });
 }

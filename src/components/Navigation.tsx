@@ -2,24 +2,32 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const navItems = [
-  { name: 'About', href: '#about' },
-  { name: 'Services', href: '#services' },
-  { name: 'Portfolio', href: '#portfolio' },
-  { name: 'Reviews', href: '#reviews' },
-  { name: 'Contact', href: '#contact' },
+{ name: 'About', href: '#about' },
+{ name: 'Services', href: '#services' },
+{ name: 'Portfolio', href: '#portfolio' },
+{ name: 'Reviews', href: '#reviews' },
+{ name: 'Contact', href: '#contact' },
 ];
 
 export default function Navigation() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+const [scrolled, setScrolled] = useState(false);
+const [mobileOpen, setMobileOpen] = useState(false);
+const [logo, setLogo] = useState<string>('');
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+useEffect(() => {
+const handleScroll = () => setScrolled(window.scrollY > 50);
+window.addEventListener('scroll', handleScroll);
+
+fetch('/api/hero')
+.then(r => r.json())
+.then(d => { if(d?.logo_url) setLogo(d.logo_url); })
+.catch(console.error);
+
+return () => window.removeEventListener('scroll', handleScroll);
+}, []);
 
   return (
     <motion.nav
@@ -29,22 +37,26 @@ export default function Navigation() {
         scrolled ? 'bg-[#050505]/95 backdrop-blur-lg border-b border-white/10' : 'bg-transparent'
       } ${scrolled ? 'py-4' : 'py-6'}`}
     >
-      <div className="max-w-screen-2xl mx-auto px-8 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="max-w-screen-2xl mx-auto px-8 flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+            {logo ? (
+            <Image src={logo} alt="RichKid Graphix Logo" width={36} height={36} className="rounded-2xl" />
+            ) : (
+            <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center shadow-lg">
             👑
-          </div>
-          <div>
+            </div>
+            )}
+            <div>
             <h1 className="text-3xl font-bold font-['Playfair_Display'] tracking-[-1px] text-white">
-              RichKid
+            RichKid
             </h1>
             <p className="text-[10px] font-bold tracking-[2px] text-[#C9A84C] -mt-1">GRAPHIX</p>
-          </div>
-          <span className="text-xs font-semibold px-3 py-1 bg-white/10 text-[#C9A84C] rounded-full hidden lg:block">
+            </div>
+            <span className="text-xs font-semibold px-3 py-1 bg-white/10 text-[#C9A84C] rounded-full hidden lg:block">
             PREMIUM DESIGN STUDIO
-          </span>
-        </div>
+            </span>
+            </div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">

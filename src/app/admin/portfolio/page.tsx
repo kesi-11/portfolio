@@ -139,15 +139,17 @@ export default function AdminPortfolioPage() {
     }
   }
 
-  async function handleDelete(id: number) {
-    const res = await fetch(`/api/portfolio?id=${id}`, {
-      method: 'DELETE',
-    });
-    if (res.ok) {
-      setDeleteId(null);
-      await fetchProjects();
-    }
-  }
+async function handleDelete(id: number) {
+const res = await fetch('/api/portfolio', {
+method: 'DELETE',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ id }),
+});
+if (res.ok) {
+setDeleteId(null);
+await fetchProjects();
+}
+}
 
   function closeModal() {
     setShowModal(false);

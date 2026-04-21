@@ -156,9 +156,9 @@ export default function Portfolio() {
               className="relative max-w-4xl w-full aspect-[4/5] bg-[#1a1a1a] rounded-3xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {selectedProject.image_url ? (
-                <img src={selectedProject.image_url} alt={selectedProject.label} className="w-full h-full object-cover" />
-              ) : (
+{selectedProject.image_url ? (
+<img src={selectedProject.image_url} alt={selectedProject.label} className="w-full h-full object-contain" />
+) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-[#C9A84C]/30 text-6xl md:text-[10rem] font-['Playfair_Display']">
                     {selectedProject.id}

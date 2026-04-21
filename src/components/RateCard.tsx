@@ -49,27 +49,31 @@ export default function RateCard() {
             Contact us for custom pricing
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {rates.map((rate) => (
-              <motion.div
-                key={rate.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-[#111] border border-white/10 rounded-2xl md:rounded-3xl p-5 md:p-8 hover:border-[#C9A84C]/30 transition-colors"
-              >
-                <h3 className="text-lg md:text-xl font-bold mb-3">{rate.service}</h3>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-2xl md:text-4xl font-bold font-['Playfair_Display'] text-[#C9A84C]">
-                    KES {rate.price.toLocaleString()}
-                  </span>
-                  {rate.unit && (
-                    <span className="text-gray-500 text-xs md:text-sm">/{rate.unit.toLowerCase()}</span>
-                  )}
-                </div>
-              </motion.div>
+            <motion.div
+            key={rate.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-5 md:p-8 hover:border-[#C9A84C]/30 transition-colors overflow-hidden"
+            >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#C9A84C]/10 rounded-full blur-3xl" />
+            <div className="relative">
+            <h3 className="text-lg md:text-xl font-bold mb-3">{rate.service}</h3>
+            <div className="flex items-baseline gap-2 mb-4">
+            <span className="text-2xl md:text-4xl font-bold font-['Playfair_Display'] text-[#C9A84C]">
+            KES {rate.price.toLocaleString()}
+            </span>
+            {rate.unit && (
+            <span className="text-gray-500 text-xs md:text-sm">/{rate.unit.toLowerCase()}</span>
+            )}
+            </div>
+            </div>
+            </motion.div>
             ))}
-          </div>
+        </div>
         )}
 
         <motion.div
