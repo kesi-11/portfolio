@@ -26,6 +26,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [authed, setAuthed] = useState<boolean | null>(null);
+  const [logo, setLogo] = useState('');
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => { if(d?.site_logo) setLogo(d.site_logo); })
+      .catch(console.error);
+  }, []);
 
   // Login page (/admin) should render without the sidebar wrapper
   const isLoginPage = pathname === '/admin';
@@ -77,9 +85,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 fixed h-full">
         <div className="p-6">
           <Link href="/admin/dashboard" className="flex items-center gap-3 mb-8">
-            <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center">
-              👑
-            </div>
+            {logo ? (
+              <div className="w-9 h-9 relative overflow-hidden rounded-xl border border-white/10">
+                <img src={logo} alt="Logo" className="w-full h-full object-contain p-0.5" />
+              </div>
+            ) : (
+              <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center border border-[#C9A84C]/30">
+                👑
+              </div>
+            )}
             <div>
               <h1 className="text-xl font-bold font-['Playfair_Display']">Admin</h1>
               <p className="text-[10px] text-[#C9A84C]">RichKid Graphix</p>

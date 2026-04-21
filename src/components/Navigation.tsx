@@ -38,24 +38,30 @@ return () => window.removeEventListener('scroll', handleScroll);
       } ${scrolled ? 'py-4' : 'py-6'}`}
     >
         <div className="max-w-screen-2xl mx-auto px-4 md:px-8 flex items-center justify-between">
-            {/* Logo */}
             <div className="flex items-center gap-3">
-            {logo ? (
-            <Image src={logo} alt="RichKid Graphix Logo" width={36} height={36} className="rounded-2xl object-contain" />
-            ) : (
-            <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center shadow-lg">
-            👑
-            </div>
-            )}
-            <div>
-            <h1 className="text-3xl font-bold font-['Playfair_Display'] tracking-[-1px] text-white">
-            RichKid
-            </h1>
-            <p className="text-[10px] font-bold tracking-[2px] text-[#C9A84C] -mt-1">GRAPHIX</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 bg-white/10 text-[#C9A84C] rounded-full hidden lg:block">
-            PREMIUM DESIGN STUDIO
-            </span>
+              {logo ? (
+                <div className="relative w-10 h-10 md:w-12 md:h-12 overflow-hidden rounded-xl border border-white/10 shadow-2xl">
+                  <Image 
+                    src={logo} 
+                    alt="Logo" 
+                    fill 
+                    className="object-contain p-1"
+                  />
+                </div>
+              ) : (
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center shadow-lg border border-[#C9A84C]/30 text-xl">
+                  👑
+                </div>
+              )}
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold font-['Playfair_Display'] tracking-[-1px] text-white">
+                  RichKid
+                </h1>
+                <p className="text-[10px] font-bold tracking-[2px] text-[#C9A84C] -mt-1">GRAPHIX</p>
+              </div>
+              <span className="text-[10px] font-semibold px-3 py-1 bg-white/10 text-[#C9A84C] rounded-full hidden lg:block border border-[#C9A84C]/20 tracking-widest uppercase">
+                Premium Design Studio
+              </span>
             </div>
 
         {/* Desktop Menu */}

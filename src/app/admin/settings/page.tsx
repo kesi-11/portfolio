@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ImageUpload from '@/components/ImageUpload';
 
 interface SiteSettings {
+  site_logo: string;
   about_text1: string;
   about_text2: string;
   about_text3: string;
@@ -15,6 +16,7 @@ interface SiteSettings {
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>({
+    site_logo: '',
     about_text1: '',
     about_text2: '',
     about_text3: '',
@@ -65,8 +67,19 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 max-w-3xl space-y-8">
-        {/* Contact Info */}
+        {/* Logo Section */}
         <div>
+          <h2 className="text-xl font-bold mb-4 font-['Playfair_Display'] text-[#C9A84C]">Brand Identity</h2>
+          <div className="mb-6">
+            <label className="block text-sm text-gray-400 mb-2">Site Logo</label>
+            <ImageUpload
+              value={settings.site_logo}
+              onChange={(url) => setSettings({ ...settings, site_logo: url })}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-8">
           <h2 className="text-xl font-bold mb-4 font-['Playfair_Display'] text-[#C9A84C]">Contact Information</h2>
           <div className="grid grid-cols-2 gap-6">
             <div>

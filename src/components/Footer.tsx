@@ -1,8 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Footer() {
+  const [logo, setLogo] = useState('');
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => { if(d?.site_logo) setLogo(d.site_logo); })
+      .catch(console.error);
+  }, []);
+
   return (
     <footer className="py-12 bg-black border-t border-white/10">
       <div className="max-w-screen-2xl mx-auto px-8 text-center">
@@ -10,12 +21,18 @@ export default function Footer() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center justify-center gap-3 mb-6"
+          className="flex items-center justify-center gap-4 mb-6"
         >
-          <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center">
-            👑
-          </div>
-          <h1 className="text-3xl font-bold font-['Playfair_Display']">RichKid Graphix</h1>
+          {logo ? (
+            <div className="relative w-10 h-10 overflow-hidden rounded-xl border border-white/10">
+              <Image src={logo} alt="Logo" fill className="object-contain p-1" />
+            </div>
+          ) : (
+            <div className="w-10 h-10 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center text-xl border border-[#C9A84C]/30">
+              👑
+            </div>
+          )}
+          <h1 className="text-3xl font-bold font-['Playfair_Display'] text-white">RichKid Graphix</h1>
         </motion.div>
         <p className="text-xs text-gray-500">PREMIUM VISUAL DESIGN STUDIO • MOMBASA, KENYA</p>
         

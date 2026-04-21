@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'richkid2026';
@@ -8,7 +8,15 @@ const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'richkid2026';
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [logo, setLogo] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => { if(d?.site_logo) setLogo(d.site_logo); })
+      .catch(console.error);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +32,15 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-[#050505]">
       <div className="w-full max-w-md p-8 bg-[#0a0a0a] rounded-3xl border border-white/10">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            👑
-          </div>
+          {logo ? (
+            <div className="w-20 h-20 relative overflow-hidden rounded-2xl border border-white/10 mx-auto mb-4">
+              <img src={logo} alt="Logo" className="w-full h-full object-contain p-1" />
+            </div>
+          ) : (
+            <div className="w-16 h-16 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C9A84C]/30 text-2xl">
+              👑
+            </div>
+          )}
           <h1 className="text-2xl font-bold font-['Playfair_Display']">Admin Login</h1>
           <p className="text-gray-400 mt-2">Enter password to access dashboard</p>
         </div>

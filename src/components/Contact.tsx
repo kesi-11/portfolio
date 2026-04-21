@@ -1,14 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '', budget: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [services, setServices] = useState<any[]>([]);
 
   const whatsappNumber = '254740639494';
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(d => setServices(Array.isArray(d) ? d : []))
+      .catch(console.error);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,14 +31,14 @@ export default function Contact() {
       });
 
       // Send to WhatsApp
-      const whatsappMessage = `*New Project Brief*%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Service:* ${formData.service}%0A*Message:* ${formData.message}`;
+      const whatsappMessage = `*New Project Brief*%0A%0A*Name:* ${formData.name}%0A*Contact:* ${formData.email}%0A*Service:* ${formData.service}%0A*Proposed Budget:* KSH ${formData.budget || 'To be discussed'}%0A%0A*Message:* ${formData.message}`;
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
       
       // Open WhatsApp
       window.open(whatsappUrl, '_blank');
 
       setSubmitted(true);
-      setFormData({ name: '', email: '', service: '', message: '' });
+      setFormData({ name: '', email: '', service: '', message: '', budget: '' });
       setTimeout(() => setSubmitted(false), 3000);
     } catch (error) {
       console.error('Failed to submit:', error);
@@ -138,21 +146,43 @@ export default function Contact() {
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">SERVICE REQUIRED</label>
-              <select
-                className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white"
-                value={formData.service}
-                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-              >
-                <option value="">Select a service</option>
-                <option value="Poster Design">Poster Design</option>
-                <option value="Brand Identity Pack">Brand Identity Pack</option>
-                <option value="Event Campaign">Event Campaign</option>
-                <option value="Full Visual System">Full Visual System</option>
-                <option value="Logo Design">Logo Design</option>
-                <option value="Social Media Kit">Social Media Kit</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div>
+                <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">SERVICE REQUIRED</label>
+                <select
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white appearance-none"
+                  value={formData.service}
+                  onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                  required
+                >
+                  <option value="" className="bg-[#0a0a0a]">Select a service</option>
+                  {services.length > 0 ? (
+                    services.map((s: any) => (
+                      <option key={s.id} value={s.title} className="bg-[#0a0a0a]">{s.title} ({s.price})</option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="Poster Design" className="bg-[#0a0a0a]">Poster Design</option>
+                      <option value="Brand Identity Pack" className="bg-[#0a0a0a]">Brand Identity Pack</option>
+                      <option value="Event Campaign" className="bg-[#0a0a0a]">Event Campaign</option>
+                      <option value="Full Visual System" className="bg-[#0a0a0a]">Full Visual System</option>
+                      <option value="Logo Design" className="bg-[#0a0a0a]">Logo Design</option>
+                      <option value="Social Media Kit" className="bg-[#0a0a0a]">Social Media Kit</option>
+                    </>
+                  )}
+                  <option value="Custom Project" className="bg-[#0a0a0a]">Other / Custom Project</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-bold tracking-widest block mb-2 text-gray-400">PROPOSED BUDGET (KSH)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 15,000"
+                  value={formData.budget}
+                  onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 focus:border-[#C9A84C] rounded-2xl md:rounded-3xl px-4 md:px-8 py-4 md:py-7 text-base md:text-lg outline-none text-white placeholder-gray-500"
+                />
+              </div>
             </div>
 
             <div>
