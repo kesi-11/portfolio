@@ -47,7 +47,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="min-h-screen flex items-center relative overflow-hidden bg-[#050505] pt-24 pb-20 md:pt-32">
+    <section className="min-h-screen flex items-center relative overflow-hidden bg-[#050505] pt-[120px] pb-16 md:pt-32">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,#111111_70%)]" />
 
       <div className="absolute top-20 left-10 w-72 h-72 bg-[#C9A84C]/5 rounded-full blur-3xl" />
@@ -65,15 +65,15 @@ export default function Hero() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C9A84C] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#C9A84C]" />
             </span>
-            <span className="hidden xs:inline">AVAILABLE FOR PROJECTS</span>
-            <span className="xs:hidden">AVAILABLE</span>
+            <span className="hidden sm:inline">AVAILABLE FOR PROJECTS</span>
+            <span className="sm:hidden">AVAILABLE</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-['Playfair_Display'] leading-[1.05]"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-['Playfair_Display'] leading-[1.05]"
           >
             Visuals Which<br />
             <span className="text-[#C9A84C]">Command Attention.</span>
@@ -145,20 +145,41 @@ export default function Hero() {
             </div>
           </div>
           <div className="relative z-10 bg-white/5 backdrop-blur-3xl border border-white/10 p-4 md:p-8 rounded-3xl shadow-2xl">
-            {settings?.hero_image_url ? (
+            {settings?.hero_video_url ? (
+              <video
+                src={settings.hero_video_url}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full aspect-square object-cover rounded-2xl shadow-xl"
+              />
+            ) : settings?.hero_image_url ? (
               <img
                 src={settings.hero_image_url}
                 alt="Hero Visual"
                 className="w-full aspect-square object-cover rounded-2xl shadow-xl"
               />
             ) : (
-              <div className="w-full aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#050505] rounded-2xl flex items-center justify-center">
-                <span className="text-[#C9A84C]/30 text-6xl md:text-[10rem] font-['Playfair_Display']">R</span>
+              <div className="w-full aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#050505] rounded-2xl flex items-center justify-center relative overflow-hidden">
+                {/* Visual Reveal Placeholder Video */}
+                <video
+                  src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-world-map-with-lines-and-dots-24653-large.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                />
+                <div className="relative z-10 text-center">
+                  <span className="text-[#C9A84C] text-6xl md:text-[10rem] font-['Playfair_Display'] leading-none">R</span>
+                  <p className="text-[10px] tracking-[4px] font-bold text-white/40 -mt-4">SHOWREEL</p>
+                </div>
               </div>
             )}
             <div className="absolute -bottom-4 -right-4 bg-black text-[#C9A84C] text-xs font-bold px-4 md:px-6 py-2 md:py-3 rounded-full flex items-center gap-1 md:gap-2 shadow-xl whitespace-nowrap">
-              <i className="fas fa-fire" />
-              {settings?.hero_image_url ? 'FEATURED DESIGN' : 'LIVE ANIMATION'}
+              <i className="fas fa-play-circle" />
+              {settings?.hero_video_url || !settings?.hero_image_url ? 'MOTION SHOWREEL 2024' : 'FEATURED DESIGN'}
             </div>
           </div>
         </div>

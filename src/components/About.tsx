@@ -34,7 +34,7 @@ export default function About() {
 
   return (
     <section id="about" className="py-24 bg-[#050505] border-t border-white/10">
-      <div className="max-w-screen-2xl mx-auto px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
         <div className="flex flex-col lg:flex-row gap-16">
           <div className="lg:w-5/12">
             <motion.div

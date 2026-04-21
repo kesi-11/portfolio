@@ -86,31 +86,18 @@ setSubmittingReview(false);
   if (loading) {
     return (
       <section id="reviews" className="py-24 bg-black border-t border-white/10">
-        <div className="max-w-screen-2xl mx-auto px-8 text-center text-gray-400">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8 text-center text-gray-400">
           Loading...
         </div>
       </section>
     );
   }
 
-  if (reviews.length === 0) {
-    return (
-      <section id="reviews" className="py-24 bg-black border-t border-white/10">
-        <div className="max-w-screen-2xl mx-auto px-8">
-          <div className="relative">
-            <span className="uppercase text-xs tracking-[2px] text-[#C9A84C] font-bold">CLIENT REVIEWS</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-bold font-['Playfair_Display'] mt-4">
-            Add testimonials in the admin panel
-          </h2>
-        </div>
-      </section>
-    );
-  }
+
 
   return (
     <section id="reviews" className="py-24 bg-black border-t border-white/10">
-      <div className="max-w-screen-2xl mx-auto px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -127,7 +114,7 @@ setSubmittingReview(false);
           viewport={{ once: true }}
           className="text-5xl md:text-6xl font-bold font-['Playfair_Display'] mt-4"
         >
-          What Clients Say About the Work.
+          {reviews.length === 0 ? "Be the first to leave a review." : "What Clients Say About the Work."}
         </motion.h2>
         
         <motion.div

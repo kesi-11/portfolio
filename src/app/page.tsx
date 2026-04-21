@@ -1,6 +1,7 @@
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
+import SoftwareStack from '@/components/SoftwareStack';
 import Portfolio from '@/components/Portfolio';
 import RateCard from '@/components/RateCard';
 import Testimonials from '@/components/Testimonials';
@@ -12,6 +13,7 @@ return (
 <main>
 <Navigation />
 <Hero />
+<SoftwareStack />
 <About />
 <Portfolio />
 <RateCard />

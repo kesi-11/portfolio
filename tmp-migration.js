@@ -10,59 +10,42 @@ async function run() {
   console.log('Connected to Postgres');
 
   const queries = `
-    -- 1. Add image columns
-    DO $$
-    BEGIN
-      IF NOT EXISTS(SELECT * FROM information_schema.columns WHERE table_name='hero_settings' and column_name='hero_image_url') THEN
-          ALTER TABLE public.hero_settings ADD COLUMN hero_image_url TEXT DEFAULT '';
-      END IF;
-      
-      IF NOT EXISTS(SELECT * FROM information_schema.columns WHERE table_name='site_settings' and column_name='about_image_url') THEN
-          ALTER TABLE public.site_settings ADD COLUMN about_image_url TEXT DEFAULT '';
-      END IF;
+    CREATE TABLE IF NOT EXISTS public.site_settings (
+        id SERIAL PRIMARY KEY,
+        about_text1 TEXT,
+        about_text2 TEXT,
+        about_text3 TEXT,
+        about_badge TEXT,
+        contact_email TEXT,
+        contact_whatsapp TEXT,
+        about_image_url TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+
+    INSERT INTO public.site_settings (about_text1, contact_email, contact_whatsapp)
+    SELECT 'Welcome to RichKid Graphix', 'hello@richkid.com', '+254700000000'
+    WHERE NOT EXISTS (SELECT 1 FROM public.site_settings LIMIT 1);
+
+    ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+    
+    DO $$ BEGIN
+        DROP POLICY IF EXISTS "Anon can manage site_settings" ON public.site_settings;
+        DROP POLICY IF EXISTS "Auth can manage site_settings" ON public.site_settings;
+        DROP POLICY IF EXISTS "Public can read site_settings" ON public.site_settings;
+    EXCEPTION WHEN OTHERS THEN NULL;
     END $$;
 
-    -- 2. Grant FULL anon access to frontend tables (NextJS API handles auth now)
-    
-    -- Function to safely drop a policy if it exists
-    CREATE OR REPLACE FUNCTION drop_policy_if_exists(policy_name text, table_name text) RETURNS void AS $$
-    BEGIN
-      EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', policy_name, table_name);
-    EXCEPTION
-      WHEN undefined_object THEN
-        NULL;
-    END;
-    $$ LANGUAGE plpgsql;
-
-    -- Hero Settings
-    SELECT drop_policy_if_exists('Auth can manage hero', 'hero_settings');
-    SELECT drop_policy_if_exists('Public can read hero_settings', 'hero_settings');
-    SELECT drop_policy_if_exists('Anon can manage hero', 'hero_settings');
-    CREATE POLICY "Anon can manage hero" ON public.hero_settings FOR ALL USING (true) WITH CHECK (true);
-
-    -- Site Settings
-    SELECT drop_policy_if_exists('Auth can manage site_settings', 'site_settings');
-    SELECT drop_policy_if_exists('Public can read site_settings', 'site_settings');
-    SELECT drop_policy_if_exists('Anon can manage site_settings', 'site_settings');
     CREATE POLICY "Anon can manage site_settings" ON public.site_settings FOR ALL USING (true) WITH CHECK (true);
 
-    -- Portfolio
-    SELECT drop_policy_if_exists('Auth can manage portfolio', 'portfolio');
-    SELECT drop_policy_if_exists('Public can read portfolio', 'portfolio');
-    SELECT drop_policy_if_exists('Anon can manage portfolio', 'portfolio');
-    CREATE POLICY "Anon can manage portfolio" ON public.portfolio FOR ALL USING (true) WITH CHECK (true);
+    DO $$ BEGIN
+        DROP POLICY IF EXISTS "Anon can manage testimonials" ON public.testimonials;
+        DROP POLICY IF EXISTS "Auth can manage testimonials" ON public.testimonials;
+        DROP POLICY IF EXISTS "Public can read testimonials" ON public.testimonials;
+        DROP POLICY IF EXISTS "Public can insert testimonials" ON public.testimonials;
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END $$;
 
-    -- Services
-    SELECT drop_policy_if_exists('Auth can manage services', 'services');
-    SELECT drop_policy_if_exists('Public can read services', 'services');
-    SELECT drop_policy_if_exists('Anon can manage services', 'services');
-    CREATE POLICY "Anon can manage services" ON public.services FOR ALL USING (true) WITH CHECK (true);
-
-    -- Testimonials
-    SELECT drop_policy_if_exists('Auth can manage testimonials', 'testimonials');
-    SELECT drop_policy_if_exists('Public can read testimonials', 'testimonials');
-    SELECT drop_policy_if_exists('Public can insert testimonials', 'testimonials');
-    SELECT drop_policy_if_exists('Anon can manage testimonials', 'testimonials');
     CREATE POLICY "Anon can manage testimonials" ON public.testimonials FOR ALL USING (true) WITH CHECK (true);
   `;
 

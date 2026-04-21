@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   title: "RichKid Graphix | Premium Graphic Design Portfolio",
@@ -21,7 +22,10 @@ export default function RootLayout({
           referrerPolicy="no-referrer"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#050505] text-[#f5f5f5]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#050505] text-[#f5f5f5]">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }

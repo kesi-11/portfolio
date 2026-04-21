@@ -95,7 +95,7 @@ export default function Portfolio() {
         ) : (
           <motion.div
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
           >
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, index) => (
@@ -115,7 +115,7 @@ export default function Portfolio() {
                       src={project.image_url}
                       alt={project.label}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -135,7 +135,7 @@ export default function Portfolio() {
 
         {filteredProjects.length === 0 && !loading && (
           <div className="text-center py-12 text-gray-400">
-            No posters in this category yet — but I can design one for you today!
+            No projects in this category yet — but I can design one for you today!
           </div>
         )}
       </div>

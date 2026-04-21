@@ -37,11 +37,11 @@ return () => window.removeEventListener('scroll', handleScroll);
         scrolled ? 'bg-[#050505]/95 backdrop-blur-lg border-b border-white/10' : 'bg-transparent'
       } ${scrolled ? 'py-4' : 'py-6'}`}
     >
-        <div className="max-w-screen-2xl mx-auto px-8 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8 flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-3">
             {logo ? (
-            <Image src={logo} alt="RichKid Graphix Logo" width={36} height={36} className="rounded-2xl" />
+            <Image src={logo} alt="RichKid Graphix Logo" width={36} height={36} className="rounded-2xl object-contain" />
             ) : (
             <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-2xl flex items-center justify-center shadow-lg">
             👑
