@@ -15,15 +15,15 @@ const navItems = [
 export default function Navigation() {
 const [scrolled, setScrolled] = useState(false);
 const [mobileOpen, setMobileOpen] = useState(false);
-const [logo, setLogo] = useState<string>('');
+const [logo, setLogo] = useState('');
 
 useEffect(() => {
 const handleScroll = () => setScrolled(window.scrollY > 50);
 window.addEventListener('scroll', handleScroll);
 
-fetch('/api/hero')
+fetch('/api/settings')
 .then(r => r.json())
-.then(d => { if(d?.logo_url) setLogo(d.logo_url); })
+.then(d => { if(d?.site_logo) setLogo(d.site_logo); })
 .catch(console.error);
 
 return () => window.removeEventListener('scroll', handleScroll);

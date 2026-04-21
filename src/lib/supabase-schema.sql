@@ -67,13 +67,14 @@ CREATE POLICY "Auth can manage rate_card" ON rate_card FOR ALL USING (auth.role(
 
 -- Hero settings table (with correct column names)
 CREATE TABLE IF NOT EXISTS hero_settings (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  hero_title TEXT,
-  hero_subtitle TEXT,
-  hero_cta_text TEXT,
-  hero_cta_link TEXT,
-  hero_image_url TEXT
+id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+hero_title TEXT,
+hero_subtitle TEXT,
+hero_cta_text TEXT,
+hero_cta_link TEXT,
+hero_image_url TEXT,
+site_logo TEXT
 );
 
 ALTER TABLE hero_settings ENABLE ROW LEVEL SECURITY;
@@ -98,11 +99,22 @@ CREATE POLICY "Public can insert contact" ON contact_submissions FOR INSERT WITH
 DROP POLICY IF EXISTS "Auth can manage contact" ON contact_submissions;
 CREATE POLICY "Auth can manage contact" ON contact_submissions FOR ALL USING (auth.role() = 'authenticated');
 
+-- Add site_logo column if it doesn't exist
+DO $$
+BEGIN
+IF NOT EXISTS (
+SELECT 1 FROM information_schema.columns
+WHERE table_name = 'hero_settings' AND column_name = 'site_logo'
+) THEN
+ALTER TABLE hero_settings ADD COLUMN site_logo TEXT;
+END IF;
+END $$;
+
 -- Insert default hero settings (only if table is empty)
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM hero_settings) THEN
-    INSERT INTO hero_settings (hero_title, hero_subtitle, hero_cta_text, hero_cta_link)
-    VALUES ('Premium Graphic Design', 'Mombasa''s Premier Design Studio', 'View Our Work', '#portfolio');
-  END IF;
+IF NOT EXISTS (SELECT 1 FROM hero_settings) THEN
+INSERT INTO hero_settings (hero_title, hero_subtitle, hero_cta_text, hero_cta_link, hero_image_url)
+VALUES ('Premium Graphic Design', 'Mombasa''s Premier Design Studio', 'View Our Work', '#portfolio', '');
+END IF;
 END $$;

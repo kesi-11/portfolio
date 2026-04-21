@@ -45,12 +45,18 @@ export default function RateCardPage() {
     fetchItems();
   }
 
-  async function handleDelete(id: number) {
-    if (confirm('Delete this rate?')) {
-      await fetch(`/api/rate-card?id=${id}`, { method: 'DELETE' });
-      fetchItems();
-    }
-  }
+async function handleDelete(id: number) {
+if (confirm('Delete this rate?')) {
+const res = await fetch('/api/rate-card', {
+method: 'DELETE',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ id }),
+});
+if (res.ok) {
+fetchItems();
+}
+}
+}
 
   function openEdit(item: RateCard) {
     setEditingItem(item);
