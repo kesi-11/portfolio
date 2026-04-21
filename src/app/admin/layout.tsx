@@ -105,10 +105,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   pathname === item.href
-                    ? 'bg-[#C9A84C]/10 text-[#C9A84C] border border-[#C9A84C]/30'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                    ? 'bg-[#C9A84C] text-black font-bold shadow-[0_0_20px_rgba(201,168,76,0.3)]'
+                    : 'text-gray-200 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
