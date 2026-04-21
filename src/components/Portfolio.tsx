@@ -140,49 +140,54 @@ export default function Portfolio() {
         )}
       </div>
 
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#050505]/95 flex items-center justify-center p-4"
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              className="relative max-w-4xl w-full aspect-[4/5] bg-[#1a1a1a] rounded-3xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-{selectedProject.image_url ? (
-<img src={selectedProject.image_url} alt={selectedProject.label} className="w-full h-full object-contain" />
-) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[#C9A84C]/30 text-6xl md:text-[10rem] font-['Playfair_Display']">
-                    {selectedProject.id}
-                  </span>
-                </div>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-gradient-to-t from-[#050505] to-transparent">
-                <p className="text-[#C9A84C] text-xs md:text-sm uppercase tracking-wider mb-2">
-                  {selectedProject.category}
-                </p>
-                <h3 className="text-xl md:text-3xl font-bold font-['Playfair_Display']">
-                  {selectedProject.label}
-                </h3>
-              </div>
-              <button
-                className="absolute top-4 right-4 w-10 h-10 bg-[#C9A84C] text-[#050505] rounded-full flex items-center justify-center hover:bg-[#E5D4A1] transition-colors z-10"
-                onClick={() => setSelectedProject(null)}
-              >
-                <i className="fas fa-times" />
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+<AnimatePresence>
+{selectedProject && (
+<motion.div
+initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
+exit={{ opacity: 0 }}
+className="fixed inset-0 z-50 bg-[#050505]/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+onClick={() => setSelectedProject(null)}
+>
+<motion.div
+initial={{ scale: 0.8, opacity: 0 }}
+animate={{ scale: 1, opacity: 1 }}
+exit={{ scale: 0.8, opacity: 0 }}
+className="relative w-full max-w-7xl"
+onClick={(e) => e.stopPropagation()}
+>
+{/* Image container - maintains aspect ratio */}
+<div className="relative w-full" style={{ minHeight: '200px' }}>
+<img 
+src={selectedProject.image_url} 
+alt={selectedProject.label} 
+className="w-full h-auto object-contain rounded-lg" 
+/>
+</div>
+
+{/* Info overlay at bottom */}
+<div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent rounded-b-lg">
+<div className="flex items-start justify-between gap-4">
+<div>
+<p className="text-[#C9A84C] text-xs md:text-sm uppercase tracking-wider mb-2">
+{selectedProject.category}
+</p>
+<h3 className="text-xl md:text-3xl font-bold font-['Playfair_Display'] text-white">
+{selectedProject.label}
+</h3>
+</div>
+<button
+className="flex-shrink-0 w-12 h-12 bg-[#C9A84C] text-[#050505] rounded-full flex items-center justify-center hover:bg-[#E5D4A1] transition-colors text-xl font-bold"
+onClick={() => setSelectedProject(null)}
+>
+✕
+</button>
+</div>
+</div>
+</motion.div>
+</motion.div>
+)}
+</AnimatePresence>
     </section>
   );
 }
