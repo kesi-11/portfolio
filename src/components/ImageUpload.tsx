@@ -49,7 +49,8 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       const data = await res.json();
       
       if (!res.ok) {
-        throw new Error(data.error || `Server error: ${res.status}`);
+        const errorMsg = data.details ? `${data.error} ${data.details}` : (data.error || `Server error: ${res.status}`);
+        throw new Error(errorMsg);
       }
 
       if (!data.url) {

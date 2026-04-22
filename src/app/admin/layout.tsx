@@ -12,8 +12,7 @@ const navItems = [
   { name: 'Logo', href: '/admin/logo', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
   { name: 'Testimonials', href: '/admin/testimonials', icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' },
   { name: 'Contact', href: '/admin/contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-  { name: 'Hero Section', href: '/admin/hero', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
-  { name: 'Site Settings', href: '/admin/settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' }
+  { name: 'Hero Section', href: '/admin/hero', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' }
 ];
 
 function getCookie(name: string): string | null {
@@ -82,45 +81,60 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen flex bg-[#050505]">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 fixed h-full">
-        <div className="p-6">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 mb-8">
-            {logo ? (
-              <div className="w-9 h-9 relative overflow-hidden rounded-xl border border-white/10">
-                <img src={logo} alt="Logo" className="w-full h-full object-contain p-0.5" />
+      <aside className="w-64 bg-[#0a0a0a] border-r border-white/10 fixed h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            <Link href="/admin/dashboard" className="flex items-center gap-3 mb-8">
+              {logo ? (
+                <div className="w-9 h-9 relative overflow-hidden rounded-xl border border-white/10">
+                  <img src={logo} alt="Logo" className="w-full h-full object-contain p-0.5" />
+                </div>
+              ) : (
+                <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center border border-[#C9A84C]/30">
+                  👑
+                </div>
+              )}
+              <div>
+                <h1 className="text-xl font-bold font-['Playfair_Display']">Admin</h1>
+                <p className="text-[10px] text-[#C9A84C]">RichKid Graphix</p>
               </div>
-            ) : (
-              <div className="w-9 h-9 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center border border-[#C9A84C]/30">
-                👑
-              </div>
-            )}
-            <div>
-              <h1 className="text-xl font-bold font-['Playfair_Display']">Admin</h1>
-              <p className="text-[10px] text-[#C9A84C]">RichKid Graphix</p>
-            </div>
-          </Link>
+            </Link>
 
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                  pathname === item.href
-                    ? 'bg-[#C9A84C] text-black font-bold shadow-[0_0_20px_rgba(201,168,76,0.3)]'
-                    : 'text-gray-200 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                </svg>
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
-            ))}
-          </nav>
+            <nav className="space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                    pathname === item.href
+                      ? 'bg-[#C9A84C] text-black font-bold shadow-[0_0_20px_rgba(201,168,76,0.3)]'
+                      : 'text-gray-200 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                  </svg>
+                  <span className="text-sm font-medium">{item.name}</span>
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10 space-y-2">
+        <div className="p-6 border-t border-white/10 space-y-2 bg-[#0a0a0a]">
+          <Link
+            href="/admin/settings"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+              pathname === '/admin/settings'
+                ? 'bg-[#C9A84C] text-black font-bold'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="text-sm font-medium">Site Settings</span>
+          </Link>
           <Link
             href="/"
             className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors"

@@ -109,7 +109,10 @@ export default function AdminPortfolioPage() {
           body: fd,
         });
         const uploadData = await uploadRes.json();
-        if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed');
+        if (!uploadRes.ok) {
+          const errorMsg = uploadData.details ? `${uploadData.error} ${uploadData.details}` : (uploadData.error || 'Upload failed');
+          throw new Error(errorMsg);
+        }
         finalImageUrl = uploadData.url;
       }
 

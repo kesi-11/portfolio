@@ -3,59 +3,82 @@
 import { useEffect, useState } from 'react';
 import ImageUpload from '@/components/ImageUpload';
 
+const LOGO_STORAGE_KEY = 'richkid_logo_url';
+
 export default function LogoPage() {
-  const [logo, setLogo] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+const [logo, setLogo] = useState('');
+const [loading, setLoading] = useState(true);
+const [saving, setSaving] = useState(false);
+const [saveMethod, setSaveMethod] = useState<'local' | 'database'>('local');
 
-  useEffect(() => {
-    fetchLogo();
-  }, []);
+useEffect(() => {
+fetchLogo();
+}, []);
 
-  async function fetchLogo() {
-    const res = await fetch('/api/settings');
-    const data = await res.json();
-    if (data?.site_logo) {
-      setLogo(data.site_logo);
-    }
-    setLoading(false);
-  }
+async function fetchLogo() {
+setLoading(true);
+if (saveMethod === 'local') {
+const stored = localStorage.getItem(LOGO_STORAGE_KEY);
+setLogo(stored || '');
+} else {
+try {
+const res = await fetch('/api/settings');
+const data = await res.json();
+if (data?.site_logo) {
+setLogo(data.site_logo);
+localStorage.setItem(LOGO_STORAGE_KEY, data.site_logo);
+}
+} catch (error) {
+console.error('Failed to fetch logo from database:', error);
+}
+}
+setLoading(false);
+}
 
-  async function handleSave() {
-    if (!logo) return;
-    setSaving(true);
-    try {
-      const res = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ site_logo: logo }),
-      });
-      
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to save logo');
-      }
+async function handleSave() {
+if (!logo) return;
+setSaving(true);
+try {
+if (saveMethod === 'local') {
+localStorage.setItem(LOGO_STORAGE_KEY, logo);
+alert('Logo saved locally! (Refresh page to see changes)');
+} else {
+const res = await fetch('/api/settings', {
+method: 'PUT',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ site_logo: logo }),
+});
 
-      alert('Logo saved successfully!');
-    } catch (error: any) {
-      alert('Error: ' + error.message);
-    } finally {
-      setSaving(false);
-    }
-  }
+if (!res.ok) {
+const data = await res.json();
+throw new Error(data.error || 'Failed to save logo');
+}
+localStorage.setItem(LOGO_STORAGE_KEY, logo);
+alert('Logo saved to database!');
+}
+} catch (error: any) {
+alert('Error: ' + error.message);
+} finally {
+setSaving(false);
+}
+}
 
-  async function handleDelete() {
-    if (confirm('Remove the logo?')) {
-      setSaving(true);
-      await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ site_logo: '' }),
-      });
-      setLogo('');
-      setSaving(false);
-    }
-  }
+async function handleDelete() {
+if (confirm('Remove the logo?')) {
+if (saveMethod === 'local') {
+localStorage.removeItem(LOGO_STORAGE_KEY);
+} else {
+await fetch('/api/settings', {
+method: 'PUT',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ site_logo: '' }),
+});
+localStorage.removeItem(LOGO_STORAGE_KEY);
+}
+setLogo('');
+window.location.reload();
+}
+}
 
   return (
     <div>

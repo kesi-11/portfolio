@@ -21,10 +21,22 @@ useEffect(() => {
 const handleScroll = () => setScrolled(window.scrollY > 50);
 window.addEventListener('scroll', handleScroll);
 
+// Try localStorage first
+const storedLogo = localStorage.getItem('richkid_logo_url');
+if (storedLogo) {
+setLogo(storedLogo);
+} else {
+// Fallback to database
 fetch('/api/settings')
 .then(r => r.json())
-.then(d => { if(d?.site_logo) setLogo(d.site_logo); })
+.then(d => { 
+if(d?.site_logo) {
+setLogo(d.site_logo);
+localStorage.setItem('richkid_logo_url', d.site_logo);
+}
+})
 .catch(console.error);
+}
 
 return () => window.removeEventListener('scroll', handleScroll);
 }, []);
