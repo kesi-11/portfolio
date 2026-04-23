@@ -3,6 +3,18 @@
 import { useEffect, useState } from 'react';
 import ImageUpload from '@/components/ImageUpload';
 
+function extractVideoId(url: string): string {
+const patterns = [
+/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+/youtube\.com\/shorts\/([^&\n?#]+)/
+];
+for (const pattern of patterns) {
+const match = url.match(pattern);
+if (match) return match[1];
+}
+return '';
+}
+
 interface SiteSettings {
 site_logo?: string;
 about_text1: string;
@@ -12,6 +24,8 @@ about_badge: string;
 contact_email: string;
 contact_whatsapp: string;
 about_image_url?: string;
+youtube_channel?: string;
+youtube_videos?: { id: string; title: string; url: string; thumbnail: string }[];
 }
 
 export default function SettingsPage() {
@@ -23,7 +37,9 @@ about_text3: '',
 about_badge: '',
 contact_email: '',
 contact_whatsapp: '',
-about_image_url: ''
+about_image_url: '',
+youtube_channel: '',
+youtube_videos: []
 });
 const [saving, setSaving] = useState(false);
 const [saved, setSaved] = useState(false);
@@ -208,6 +224,64 @@ onChange={(e) => setSettings({ ...settings, about_text3: e.target.value })}
 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors"
 rows={3}
 />
+</div>
+</div>
+</div>
+
+{/* YouTube Section */}
+<div className="border-t border-white/10 pt-8">
+<h2 className="text-xl font-bold mb-4 font-['Playfair_Display'] text-[#C9A84C]">YouTube Channel</h2>
+<p className="text-gray-400 text-sm mb-6">Add your YouTube channel to showcase your films and video content.</p>
+
+<div className="space-y-6">
+<div>
+<label className="block text-sm text-gray-400 mb-2">Channel URL</label>
+<input
+type="url"
+value={settings.youtube_channel || ''}
+onChange={(e) => setSettings({ ...settings, youtube_channel: e.target.value })}
+className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors"
+placeholder="https://youtube.com/@yourchannel"
+/>
+</div>
+
+<div>
+<label className="block text-sm text-gray-400 mb-3">Featured Videos (paste YouTube video URLs)</label>
+<div className="space-y-3">
+{['Video 1', 'Video 2', 'Video 3'].map((label, index) => {
+const videoUrl = settings.youtube_videos?.[index]?.url || '';
+return (
+<div key={index}>
+<input
+type="url"
+value={videoUrl}
+onChange={(e) => {
+const videos = settings.youtube_videos || [];
+const videoId = extractVideoId(e.target.value);
+const newVideos = [...videos];
+newVideos[index] = {
+id: videoId || '',
+title: `Video ${index + 1}`,
+url: e.target.value,
+thumbnail: videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : ''
+};
+setSettings({ ...settings, youtube_videos: newVideos });
+}}
+className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors mb-2"
+placeholder={`YouTube Video ${index + 1} URL`}
+/>
+{videoUrl && (
+<img
+src={`https://img.youtube.com/vi/${extractVideoId(videoUrl)}/mqdefault.jpg`}
+alt={`Video ${index + 1} thumbnail`}
+className="w-full max-w-xs rounded-lg"
+onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+/>
+)}
+</div>
+);
+})}
+</div>
 </div>
 </div>
 </div>

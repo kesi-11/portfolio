@@ -1,10 +1,10 @@
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
-import SoftwareStack from '@/components/SoftwareStack';
 import Portfolio from '@/components/Portfolio';
 import RateCard from '@/components/RateCard';
 import Testimonials from '@/components/Testimonials';
+import YouTube from '@/components/YouTube';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 
@@ -13,11 +13,11 @@ return (
 <main>
 <Navigation />
 <Hero />
-<SoftwareStack />
 <About />
 <Portfolio />
 <RateCard />
 <Testimonials />
+<YouTube />
 <Contact />
 <Footer />
 </main>
