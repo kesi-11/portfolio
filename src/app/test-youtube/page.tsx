@@ -15,25 +15,34 @@ export default function TestYouTube() {
     const runTests = async () => {
       const testResults: TestResult[] = [];
       
-      // Test 1: Fetch from API
+      // Test 1: Fetch from settings API
       try {
         const res = await fetch('/api/settings');
         const data = await res.json();
-        testResults.push({ type: 'API Response', data });
+        testResults.push({ type: '1. /api/settings', data });
       } catch (error: any) {
         testResults.push({ type: 'API Error', data: error.message });
       }
 
-      // Test 2: Check localStorage
+      // Test 2: Check YouTube-specific API
+      try {
+        const res = await fetch('/api/check-youtube');
+        const data = await res.json();
+        testResults.push({ type: '2. /api/check-youtube (Direct DB)', data });
+      } catch (error: any) {
+        testResults.push({ type: 'Check YouTube API Error', data: error.message });
+      }
+
+      // Test 3: Check localStorage
       const stored = localStorage.getItem('richkid_settings');
       if (stored) {
         try {
-          testResults.push({ type: 'localStorage', data: JSON.parse(stored) });
+          testResults.push({ type: '3. localStorage', data: JSON.parse(stored) });
         } catch (e: any) {
           testResults.push({ type: 'localStorage parse error', data: e.message });
         }
       } else {
-        testResults.push({ type: 'localStorage', data: 'No data found' });
+        testResults.push({ type: '3. localStorage', data: 'No data found' });
       }
 
       setResults(testResults);
