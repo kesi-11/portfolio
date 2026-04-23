@@ -56,8 +56,8 @@ viewport={{ once: true }}
 className="flex items-center justify-center gap-4 mb-6"
 >
 {logo ? (
-<div className="relative w-10 h-10 overflow-hidden rounded-xl border border-white/10 bg-white">
-<Image src={logo} alt="Logo" fill className="object-contain p-2" />
+<div className="relative w-10 h-10 overflow-hidden rounded-xl border border-white/10">
+<Image src={logo} alt="Logo" fill className="object-cover" />
 </div>
 ) : (
 <div className="w-10 h-10 bg-gradient-to-br from-[#C9A84C] to-[#8B7355] rounded-xl flex items-center justify-center text-xl border border-[#C9A84C]/30">

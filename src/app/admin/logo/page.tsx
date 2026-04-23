@@ -39,10 +39,16 @@ async function handleSave() {
 if (!logo) return;
 setSaving(true);
 try {
-if (saveMethod === 'local') {
+// Save to both localStorage keys
 localStorage.setItem(LOGO_STORAGE_KEY, logo);
-alert('Logo saved locally! (Refresh page to see changes)');
-} else {
+const settings = JSON.parse(localStorage.getItem('richkid_settings') || '{}');
+settings.site_logo = logo;
+localStorage.setItem('richkid_settings', JSON.stringify(settings));
+
+// Notify all components
+window.dispatchEvent(new CustomEvent('settings-updated', { detail: { site_logo: logo } }));
+
+if (saveMethod === 'database') {
 const res = await fetch('/api/settings', {
 method: 'PUT',
 headers: { 'Content-Type': 'application/json' },
@@ -53,8 +59,9 @@ if (!res.ok) {
 const data = await res.json();
 throw new Error(data.error || 'Failed to save logo');
 }
-localStorage.setItem(LOGO_STORAGE_KEY, logo);
-alert('Logo saved to database!');
+alert('Logo saved!');
+} else {
+alert('Logo saved!');
 }
 } catch (error: any) {
 alert('Error: ' + error.message);
