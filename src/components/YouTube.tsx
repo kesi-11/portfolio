@@ -21,13 +21,21 @@ export default function YouTube() {
       fetch('/api/settings')
         .then(res => res.json())
         .then(data => {
-          if (data?.youtube_channel) setChannelUrl(data.youtube_channel);
-          if (data?.youtube_videos && data.youtube_videos.length > 0) {
+          console.log('YouTube API response:', data);
+          if (data?.youtube_channel) {
+            setChannelUrl(data.youtube_channel);
+            console.log('Set channel URL:', data.youtube_channel);
+          }
+          if (data?.youtube_videos && Array.isArray(data.youtube_videos) && data.youtube_videos.length > 0) {
             setVideos(data.youtube_videos);
+            console.log('Set videos from DB:', data.youtube_videos);
+          } else {
+            console.log('No videos in DB, checking fallback...');
           }
           setLoading(false);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('API fetch failed, using localStorage fallback:', err);
           // Fallback to localStorage
           const storedSettings = localStorage.getItem('richkid_settings');
           if (storedSettings) {

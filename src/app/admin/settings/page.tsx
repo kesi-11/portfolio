@@ -84,6 +84,11 @@ try {
 // Save to localStorage
 localStorage.setItem('richkid_settings', JSON.stringify(settings));
 
+console.log('Saving YouTube data:', {
+youtube_channel: settings.youtube_channel,
+youtube_videos: settings.youtube_videos
+});
+
 // Also try database
 const res = await fetch('/api/settings', {
 method: 'PUT',
@@ -91,9 +96,11 @@ headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(settings)
 });
 
+const result = await res.json();
+console.log('Database save result:', result);
+
 if (!res.ok) {
-const data = await res.json();
-console.warn('Database save failed:', data.error);
+console.warn('Database save failed:', result.error);
 }
 
 // Notify all components to update
