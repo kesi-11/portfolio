@@ -248,44 +248,69 @@ placeholder="https://youtube.com/@yourchannel"
 />
 </div>
 
-<div>
-<label className="block text-sm text-gray-400 mb-3">Featured Videos (paste YouTube video URLs)</label>
-<div className="space-y-3">
-{['Video 1', 'Video 2', 'Video 3'].map((label, index) => {
-const videoUrl = settings.youtube_videos?.[index]?.url || '';
-return (
-<div key={index}>
-<input
-type="url"
-value={videoUrl}
-onChange={(e) => {
-const videos = settings.youtube_videos || [];
-const videoId = extractVideoId(e.target.value);
-const newVideos = [...videos];
-newVideos[index] = {
-id: videoId || '',
-title: `Video ${index + 1}`,
-url: e.target.value,
-thumbnail: videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : ''
-};
-setSettings({ ...settings, youtube_videos: newVideos });
-}}
-className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors mb-2"
-placeholder={`YouTube Video ${index + 1} URL`}
-/>
-{videoUrl && (
-<img
-src={`https://img.youtube.com/vi/${extractVideoId(videoUrl)}/mqdefault.jpg`}
-alt={`Video ${index + 1} thumbnail`}
-className="w-full max-w-xs rounded-lg"
-onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-/>
-)}
-</div>
-);
-})}
-</div>
-</div>
+  <div>
+    <label className="block text-sm text-gray-400 mb-3">Featured Videos (paste YouTube video URLs)</label>
+    <div className="space-y-3">
+      {settings.youtube_videos?.map((video, index) => (
+        <div key={index} className="flex items-start gap-3">
+          <div className="flex-1">
+            <input
+              type="url"
+              value={video.url || ''}
+              onChange={(e) => {
+                const videos = settings.youtube_videos || [];
+                const videoId = extractVideoId(e.target.value);
+                videos[index] = {
+                  id: videoId || '',
+                  title: `Video ${index + 1}`,
+                  url: e.target.value,
+                  thumbnail: videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : ''
+                };
+                setSettings({ ...settings, youtube_videos: [...videos] });
+              }}
+              className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-[#C9A84C] outline-none transition-colors mb-2"
+              placeholder={`YouTube Video ${index + 1} URL`}
+            />
+            {video.url && (
+              <img
+                src={`https://img.youtube.com/vi/${extractVideoId(video.url)}/mqdefault.jpg`}
+                alt={`Video ${index + 1} thumbnail`}
+                className="w-full max-w-xs rounded-lg"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            )}
+          </div>
+          <button
+            onClick={() => {
+              const videos = settings.youtube_videos || [];
+              videos.splice(index, 1);
+              setSettings({ ...settings, youtube_videos: [...videos] });
+            }}
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+            title="Remove video"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      ))}
+      
+      <button
+        onClick={() => {
+          const videos = settings.youtube_videos || [];
+          videos.push({ id: '', title: `Video ${videos.length + 1}`, url: '', thumbnail: '' });
+          setSettings({ ...settings, youtube_videos: [...videos] });
+        }}
+        className="w-full py-3 border-2 border-dashed border-white/20 rounded-xl text-gray-400 hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors flex items-center justify-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+        </svg>
+        Add Video
+      </button>
+    </div>
+  </div>
 </div>
 </div>
 </div>

@@ -21,13 +21,19 @@ hero_title TEXT DEFAULT 'Premium Graphic Design',
 hero_subtitle TEXT DEFAULT 'Mombasa''s Premier Design Studio',
 hero_cta_text TEXT DEFAULT 'View Our Work',
 hero_cta_link TEXT DEFAULT '#portfolio',
-hero_image_url TEXT DEFAULT ''
+hero_image_url TEXT DEFAULT '',
+youtube_channel TEXT DEFAULT '',
+youtube_videos JSONB DEFAULT '[]'
 );
 
--- 2. Add site_logo column to hero_settings (for backward compatibility)
+-- 2. Add youtube columns to site_settings (if table exists)
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS youtube_channel TEXT DEFAULT '';
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS youtube_videos JSONB DEFAULT '[]';
+
+-- 3. Add site_logo column to hero_settings (for backward compatibility)
 ALTER TABLE hero_settings ADD COLUMN IF NOT EXISTS site_logo TEXT;
 
--- 3. Add missing columns to testimonials table
+-- 4. Add missing columns to testimonials table
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS role TEXT DEFAULT '';
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS initials TEXT DEFAULT '';
@@ -35,12 +41,12 @@ ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS color TEXT DEFAULT 'bg-amber-6
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
--- 4. Insert default site settings if not exists
+-- 5. Insert default site settings if not exists
 INSERT INTO site_settings (about_text1, about_text2, about_text3, about_badge, contact_email, contact_whatsapp)
 SELECT 'We are a premium graphic design studio based in Mombasa, Kenya.', 'Specializing in brand identities, print design, and digital visuals.', 'With over 5 years of experience, we deliver designs that command attention.', 'GRAPHIC DESIGNER', 'info@richkidgraphix.com', '+254740639494'
 WHERE NOT EXISTS (SELECT 1 FROM site_settings);
 
--- 5. Insert default rate card items
+-- 6. Insert default rate card items
 INSERT INTO rate_card (service, price, unit, display_order)
 SELECT * FROM (VALUES 
 ('Logo Design', 5000, 'project', 1),
@@ -54,7 +60,7 @@ SELECT * FROM (VALUES
 ) AS t(service, price, unit, display_order)
 WHERE NOT EXISTS (SELECT 1 FROM rate_card);
 
--- 6. Enable RLS on site_settings
+-- 7. Enable RLS on site_settings
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public can read site_settings" ON site_settings;
 CREATE POLICY "Public can read site_settings" ON site_settings FOR SELECT USING (true);

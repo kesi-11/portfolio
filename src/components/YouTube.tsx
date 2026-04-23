@@ -4,36 +4,49 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface YouTubeVideo {
-id: string;
-title: string;
-thumbnail: string;
-url: string;
+  id: string;
+  title: string;
+  thumbnail: string;
+  url: string;
 }
 
 export default function YouTube() {
-const [channelUrl, setChannelUrl] = useState('');
-const [videos, setVideos] = useState<YouTubeVideo[]>([]);
-const [loading, setLoading] = useState(true);
+  const [channelUrl, setChannelUrl] = useState('');
+  const [videos, setVideos] = useState<YouTubeVideo[]>([]);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-// Load from richkid_settings (combined with other settings)
-const storedSettings = localStorage.getItem('richkid_settings');
-if (storedSettings) {
-const settings = JSON.parse(storedSettings);
-if (settings.youtube_channel) setChannelUrl(settings.youtube_channel);
-if (settings.youtube_videos) setVideos(settings.youtube_videos);
-}
+  useEffect(() => {
+    const loadSettings = () => {
+      // Fetch from API first (database)
+      fetch('/api/settings')
+        .then(res => res.json())
+        .then(data => {
+          if (data?.youtube_channel) setChannelUrl(data.youtube_channel);
+          if (data?.youtube_videos && data.youtube_videos.length > 0) {
+            setVideos(data.youtube_videos);
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          // Fallback to localStorage
+          const storedSettings = localStorage.getItem('richkid_settings');
+          if (storedSettings) {
+            const settings = JSON.parse(storedSettings);
+            if (settings.youtube_channel) setChannelUrl(settings.youtube_channel);
+            if (settings.youtube_videos) setVideos(settings.youtube_videos);
+          }
+          setLoading(false);
+        });
+    };
 
-// Also try old format
-const stored = localStorage.getItem('richkid_youtube');
-if (stored && !storedSettings) {
-const data = JSON.parse(stored);
-setChannelUrl(data.channelUrl || '');
-setVideos(data.videos || []);
-}
+    loadSettings();
 
-setLoading(false);
-}, []);
+    // Listen for settings updates
+    window.addEventListener('settings-updated', loadSettings as EventListener);
+    return () => {
+      window.removeEventListener('settings-updated', loadSettings as EventListener);
+    };
+  }, []);
 
 if (loading) return null;
 
