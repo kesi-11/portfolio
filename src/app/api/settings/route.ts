@@ -15,8 +15,18 @@ const { data: siteSettings, error: siteError } = await supabase
 console.log('site_settings query:', { siteSettings, siteError });
 
 if (siteSettings && siteSettings.length > 0) {
-console.log('Returning site_settings:', siteSettings[0]);
-return NextResponse.json(siteSettings[0]);
+const row = siteSettings[0];
+// Parse JSONB fields if they're strings
+if (typeof row.youtube_videos === 'string') {
+try {
+row.youtube_videos = JSON.parse(row.youtube_videos);
+} catch (e) {
+console.error('Failed to parse youtube_videos JSON:', e);
+row.youtube_videos = [];
+}
+}
+console.log('Returning site_settings:', row);
+return NextResponse.json(row);
 }
 
 if (siteError && siteError.code !== 'PGRST116') {
