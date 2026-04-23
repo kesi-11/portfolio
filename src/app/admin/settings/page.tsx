@@ -96,6 +96,9 @@ const data = await res.json();
 console.warn('Database save failed:', data.error);
 }
 
+// Notify all components to update
+window.dispatchEvent(new CustomEvent('settings-updated', { detail: settings }));
+
 setSaved(true);
 setTimeout(() => setSaved(false), 2000);
 } catch (error: any) {

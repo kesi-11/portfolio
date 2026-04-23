@@ -37,7 +37,39 @@ setLoading(false);
 
 if (loading) return null;
 
-if (!channelUrl && videos.length === 0) return null;
+// Always show section if channel URL exists, even without featured videos
+if (!channelUrl && videos.length === 0) {
+// Show a simple CTA instead
+return (
+<section id="youtube" className="py-12 md:py-24 bg-black border-t border-white/10">
+<div className="max-w-screen-2xl mx-auto px-4 md:px-8 text-center">
+<motion.div
+initial={{ opacity: 0 }}
+whileInView={{ opacity: 1 }}
+viewport={{ once: true }}
+>
+<span className="uppercase text-xs tracking-[2px] text-[#C9A84C] font-bold">FILMS & CONTENT</span>
+<h2 className="text-3xl md:text-5xl lg:text-6xl font-bold font-['Playfair_Display'] mt-4">
+Watch Our Work
+</h2>
+<p className="text-sm md:text-gray-400 mt-4 max-w-2xl mx-auto">
+Check out our latest film projects and music videos on YouTube.
+</p>
+<a
+href="https://youtube.com/@richkidfilmproduction?si=aGW4-Inp5uo6OMzO"
+target="_blank"
+rel="noopener noreferrer"
+className="inline-flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-full transition-colors mt-8"
+>
+<i className="fab fa-youtube text-2xl" />
+Subscribe to Our Channel
+<i className="fas fa-external-link-alt text-sm" />
+</a>
+</motion.div>
+</div>
+</section>
+);
+}
 
 return (
 <section id="youtube" className="py-12 md:py-24 bg-black border-t border-white/10">
