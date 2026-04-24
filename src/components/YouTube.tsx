@@ -17,43 +17,34 @@ export default function YouTube() {
 
   useEffect(() => {
     const loadSettings = () => {
-      // Fetch from API first (database)
-      fetch('/api/settings')
+      const timestamp = Date.now();
+      // Fetch from API with cache bust
+      fetch(`/api/settings?t=${timestamp}`)
         .then(res => res.json())
         .then(data => {
           console.log('YouTube API response:', data);
+          console.log('youtube_channel:', data?.youtube_channel);
+          console.log('youtube_videos:', data?.youtube_videos);
           if (data?.youtube_channel) {
             setChannelUrl(data.youtube_channel);
-            console.log('Set channel URL:', data.youtube_channel);
           }
           if (data?.youtube_videos && Array.isArray(data.youtube_videos) && data.youtube_videos.length > 0) {
             setVideos(data.youtube_videos);
-            console.log('Set videos from DB:', data.youtube_videos);
-          } else {
-            console.log('No videos in DB, checking fallback...');
+            console.log('✓ Videos set from API:', data.youtube_videos.length);
           }
           setLoading(false);
         })
         .catch((err) => {
-          console.error('API fetch failed, using localStorage fallback:', err);
-          // Fallback to localStorage
-          const storedSettings = localStorage.getItem('richkid_settings');
-          if (storedSettings) {
-            const settings = JSON.parse(storedSettings);
-            if (settings.youtube_channel) setChannelUrl(settings.youtube_channel);
-            if (settings.youtube_videos) setVideos(settings.youtube_videos);
-          }
+          console.error('API fetch failed:', err);
           setLoading(false);
         });
     };
 
     loadSettings();
-
-    // Listen for settings updates
-    window.addEventListener('settings-updated', loadSettings as EventListener);
-    return () => {
-      window.removeEventListener('settings-updated', loadSettings as EventListener);
-    };
+    
+    // Refresh on settings update
+    window.addEventListener('settings-updated', loadSettings);
+    return () => window.removeEventListener('settings-updated', loadSettings);
   }, []);
 
 if (loading) return null;
