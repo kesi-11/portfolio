@@ -1,8 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const ratePackages = [
+interface Rate {
+  id: number;
+  service: string;
+  price: number;
+  unit: string;
+}
+
+// Fallback packages shown when no rate_card entries exist in the database
+const fallbackPackages = [
   {
     id: 1,
     title: 'Essential Brand Identity',
@@ -51,6 +60,120 @@ const ratePackages = [
 ];
 
 export default function RateCard() {
+  const [rates, setRates] = useState<Rate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [whatsappNumber, setWhatsatsappNumber] = useState('254740639494');
+
+  useEffect(() => {
+    fetchRates();
+    fetchSettings();
+  }, []);
+
+  async function fetchRates() {
+    try {
+      const res = await fetch('/api/rate-card');
+      const data = await res.json();
+      setRates(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to fetch rates:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (data?.contact_whatsapp) {
+        setWhatsatsappNumber(data.contact_whatsapp.replace(/\D/g, ''));
+      }
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+    }
+  }
+
+  function getWhatsAppUrl(serviceName: string, price: string) {
+    const message = encodeURIComponent(`Hello! I'm interested in your ${serviceName} service (${price}). I'd like to request a quote.`);
+    return `https://wa.me/${whatsappNumber}?text=${message}`;
+  }
+
+  // If there are database rate_card entries, show them as a simple list
+  if (rates.length > 0) {
+    return (
+      <section id="pricing" className="py-16 md:py-24 bg-[#050505]">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-12 md:mb-20"
+          >
+            <span className="uppercase text-xs tracking-[2px] text-[#C9A84C] font-bold">PRICING</span>
+            <h2 className="text-4xl md:text-6xl font-bold font-['Playfair_Display'] mt-4 text-white">
+              Transparent Pricing
+            </h2>
+            <p className="text-sm md:text-gray-400 mt-4 max-w-2xl mx-auto">
+              Professional design services at competitive rates. Custom packages available for larger projects.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {rates.map((rate) => (
+              <motion.div
+                key={rate.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-[#111] border border-white/10 rounded-2xl md:rounded-3xl p-5 md:p-8 hover:border-[#C9A84C]/30 transition-colors"
+              >
+                <h3 className="text-lg md:text-xl font-bold mb-3">{rate.service}</h3>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-2xl md:text-4xl font-bold font-['Playfair_Display'] text-[#C9A84C]">
+                    KES {rate.price.toLocaleString()}
+                  </span>
+                  {rate.unit && (
+                    <span className="text-gray-500 text-xs md:text-sm">/{rate.unit.toLowerCase()}</span>
+                  )}
+                </div>
+                <a
+                  href={getWhatsAppUrl(rate.service, `KES ${rate.price.toLocaleString()}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#C9A84C] text-black font-semibold rounded-xl hover:bg-[#E5D4A1] transition-colors text-sm mt-2"
+                >
+                  <i className="fab fa-whatsapp" />
+                  REQUEST QUOTE
+                </a>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-8 md:mt-12 px-4"
+          >
+            <p className="text-gray-400 mb-4 md:mb-6 text-sm md:text-base">
+              Need a custom package? Let&apos;s discuss your project.
+            </p>
+            <a
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello! I need a custom design package. Can we discuss?')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-[#C9A84C] text-black font-semibold rounded-2xl hover:bg-[#E5D4A1] transition-colors text-sm md:text-base"
+            >
+              <i className="fab fa-whatsapp" />
+              Chat on WhatsApp
+            </a>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
+  // Fallback: show styled package cards when no rate_card entries exist
   return (
     <section id="pricing" className="py-16 md:py-24 bg-[#050505]">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-8">
@@ -70,7 +193,7 @@ export default function RateCard() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {ratePackages.map((pkg, index) => (
+          {fallbackPackages.map((pkg, index) => (
             <motion.div
               key={pkg.id}
               initial={{ opacity: 0, y: 30 }}
@@ -116,15 +239,16 @@ export default function RateCard() {
               </ul>
 
               <a
-                href={pkg.is_featured ? "https://wa.me/254700000000?text=Hello!%20I'm%20interested%20in%20your%20Event/Campaign%20Pack" : "https://wa.me/254700000000"}
+                href={getWhatsAppUrl(pkg.title, pkg.price)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`mt-10 w-full py-4 text-center font-bold text-sm tracking-widest rounded-xl transition-all ${
+                className={`mt-10 w-full py-4 text-center font-bold text-sm tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${
                   pkg.is_featured
                     ? 'bg-[#C9A84C] text-black hover:bg-[#E5D4A1] hover:scale-105'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
+                <i className="fab fa-whatsapp" />
                 REQUEST QUOTE
               </a>
             </motion.div>

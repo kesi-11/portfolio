@@ -15,9 +15,11 @@ interface Service {
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [whatsappNumber, setWhatsatsappNumber] = useState('254740639494');
 
   useEffect(() => {
     fetchServices();
+    fetchSettings();
   }, []);
 
   async function fetchServices() {
@@ -30,6 +32,23 @@ export default function Services() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (data?.contact_whatsapp) {
+        setWhatsatsappNumber(data.contact_whatsapp.replace(/\D/g, ''));
+      }
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+    }
+  }
+
+  function getWhatsAppUrl(service: Service) {
+    const message = encodeURIComponent(`Hello! I'm interested in your ${service.title} package (${service.price}). I'd like to request a quote.`);
+    return `https://wa.me/${whatsappNumber}?text=${message}`;
   }
 
   if (loading) {
@@ -124,15 +143,19 @@ export default function Services() {
                 ))}
               </ul>
 
-              <button
-                className={`mt-12 w-full py-6 font-bold rounded-full text-lg transition-transform hover:scale-105 ${
+              <a
+                href={getWhatsAppUrl(service)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`mt-12 w-full py-6 font-bold rounded-full text-lg transition-transform hover:scale-105 flex items-center justify-center gap-2 ${
                   service.is_featured
                     ? 'bg-black text-white hover:bg-gray-900'
                     : 'bg-white text-black hover:bg-gray-200'
                 }`}
               >
-                {service.title.toLowerCase().includes('brand') ? 'GET THIS PACK' : service.title.toLowerCase().includes('event') ? 'BOOK CAMPAIGN' : 'GET STARTED'}
-              </button>
+                <i className="fab fa-whatsapp" />
+                REQUEST QUOTE
+              </a>
             </motion.div>
           ))}
         </div>

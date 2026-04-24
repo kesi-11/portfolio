@@ -3,11 +3,15 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const stats = [
-  { target: 150, suffix: '+', label: 'Projects Delivered' },
-  { target: 80, suffix: '+', label: 'Happy Clients' },
-  { target: 5, suffix: '', label: 'Average Rating' },
+const DEFAULT_STATS = [
+  { target: 150, suffix: '+', label: 'Projects Delivered', isRating: false },
+  { target: 80, suffix: '+', label: 'Happy Clients', isRating: false },
+  { target: 5, suffix: '', label: 'Average Rating', isRating: true },
 ];
+
+const DEFAULT_HEADLINE = 'Visuals Which';
+const DEFAULT_HEADLINE_GOLD = 'Command Attention.';
+const DEFAULT_SUBHEADLINE = 'RichKid Graphix crafts premium brand identities, poster designs, and visual systems that make your brand impossible to ignore.';
 
 function Counter({ target, suffix }: { target: number; suffix: string }) {
   const [count, setCount] = useState(0);
@@ -36,15 +40,92 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
   return <span>{count}{suffix}</span>;
 }
 
+interface HeroSettings {
+  headline?: string;
+  subheadline?: string;
+  hero_image_url?: string;
+  hero_video_url?: string;
+  stat1_label?: string;
+  stat1_value?: string;
+  stat2_label?: string;
+  stat2_value?: string;
+  stat3_label?: string;
+  stat3_value?: string;
+}
+
 export default function Hero() {
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<HeroSettings>({});
 
   useEffect(() => {
     fetch('/api/hero')
-    .then(r => r.json())
-    .then(d => { if(d) setSettings(d); })
-    .catch(console.error);
+      .then(r => r.json())
+      .then(d => { if (d) setSettings(d); })
+      .catch(console.error);
   }, []);
+
+  // Parse headline: split on last space before a period, or just use first line / second line
+  const headline = settings.headline || DEFAULT_HEADLINE;
+  const headlineGold = settings.headline
+    ? '' // If admin set a full headline, we'll render it all and highlight the last sentence
+    : DEFAULT_HEADLINE_GOLD;
+
+  // Parse stats from settings or use defaults
+  const stats = [
+    {
+      value: settings.stat1_value || `${DEFAULT_STATS[0].target}+`,
+      label: settings.stat1_label || DEFAULT_STATS[0].label,
+      isRating: false,
+      numericTarget: parseInt((settings.stat1_value || '150').replace(/[^0-9]/g, '')) || 150,
+      suffix: (settings.stat1_value || '').includes('+') ? '+' : '',
+    },
+    {
+      value: settings.stat2_value || `${DEFAULT_STATS[1].target}+`,
+      label: settings.stat2_label || DEFAULT_STATS[1].label,
+      isRating: false,
+      numericTarget: parseInt((settings.stat2_value || '80').replace(/[^0-9]/g, '')) || 80,
+      suffix: (settings.stat2_value || '').includes('+') ? '+' : '',
+    },
+    {
+      value: settings.stat3_value || `${DEFAULT_STATS[2].target}`,
+      label: settings.stat3_label || DEFAULT_STATS[2].label,
+      isRating: (settings.stat3_value || '5').length <= 2, // Single digit = rating
+      numericTarget: parseInt((settings.stat3_value || '5').replace(/[^0-9]/g, '')) || 5,
+      suffix: '',
+    },
+  ];
+
+  // Split headline into two parts: everything before the last sentence, and the last sentence (gold)
+  let headlineLine1 = headline;
+  let headlineLine2 = headlineGold;
+  if (settings.headline) {
+    // Try to split at last period/exclamation/question
+    const lastPeriodIdx = headline.lastIndexOf('.');
+    if (lastPeriodIdx > 0 && lastPeriodIdx < headline.length - 1) {
+      headlineLine1 = headline.substring(0, lastPeriodIdx + 1).trim();
+      headlineLine2 = headline.substring(lastPeriodIdx + 1).trim();
+    } else if (lastPeriodIdx === headline.length - 1) {
+      // Period at end - split at last sentence boundary
+      const secondLastPeriod = headline.lastIndexOf('.', lastPeriodIdx - 1);
+      if (secondLastPeriod > 0) {
+        headlineLine1 = headline.substring(0, secondLastPeriod + 1).trim();
+        headlineLine2 = headline.substring(secondLastPeriod + 1).trim();
+      } else {
+        // Just one sentence - put it all on line 1, gold on line 2 empty
+        headlineLine1 = headline;
+        headlineLine2 = '';
+      }
+    } else {
+      // No period - check for line break
+      const breakIdx = headline.indexOf('\n');
+      if (breakIdx > 0) {
+        headlineLine1 = headline.substring(0, breakIdx).trim();
+        headlineLine2 = headline.substring(breakIdx + 1).trim();
+      } else {
+        headlineLine1 = headline;
+        headlineLine2 = '';
+      }
+    }
+  }
 
   return (
     <section className="min-h-screen flex items-center relative overflow-hidden bg-[#050505] pt-[120px] pb-16 md:pt-32">
@@ -75,8 +156,8 @@ export default function Hero() {
             transition={{ delay: 0.4 }}
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-['Playfair_Display'] leading-[1.05]"
           >
-            Visuals Which<br />
-            <span className="text-[#C9A84C]">Command Attention.</span>
+            {headlineLine1}{headlineLine1 && <br />}
+            {headlineLine2 && <span className="text-[#C9A84C]">{headlineLine2}</span>}
           </motion.h1>
 
           <motion.p
@@ -85,8 +166,7 @@ export default function Hero() {
             transition={{ delay: 0.6 }}
             className="text-sm md:text-xl text-gray-400 max-w-lg"
           >
-            RichKid Graphix crafts premium brand identities, poster designs,
-            and visual systems that make your brand impossible to ignore.
+            {settings.subheadline || DEFAULT_SUBHEADLINE}
           </motion.p>
 
           <motion.div
@@ -119,12 +199,12 @@ export default function Hero() {
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl md:text-5xl font-bold text-[#C9A84C]">
-                  {index === 2 ? (
+                  {stat.isRating ? (
                     <span className="flex items-center gap-1">
-                      5 <i className="fas fa-star text-2xl md:text-3xl" />
+                      {stat.numericTarget} <i className="fas fa-star text-2xl md:text-3xl" />
                     </span>
                   ) : (
-                    <Counter target={stat.target} suffix={stat.suffix} />
+                    <Counter target={stat.numericTarget} suffix={stat.suffix} />
                   )}
                 </div>
                 <p className="text-[10px] md:text-sm uppercase tracking-widest text-gray-400">{stat.label}</p>
@@ -145,7 +225,7 @@ export default function Hero() {
             </div>
           </div>
           <div className="relative z-10 bg-white/5 backdrop-blur-3xl border border-white/10 p-4 md:p-8 rounded-3xl shadow-2xl">
-            {settings?.hero_video_url ? (
+            {settings.hero_video_url ? (
               <video
                 src={settings.hero_video_url}
                 autoPlay
@@ -154,7 +234,7 @@ export default function Hero() {
                 playsInline
                 className="w-full aspect-square object-cover rounded-2xl shadow-xl"
               />
-            ) : settings?.hero_image_url ? (
+            ) : settings.hero_image_url ? (
               <img
                 src={settings.hero_image_url}
                 alt="Hero Visual"
@@ -162,7 +242,6 @@ export default function Hero() {
               />
             ) : (
               <div className="w-full aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#050505] rounded-2xl flex items-center justify-center relative overflow-hidden">
-                {/* Visual Reveal Placeholder Video */}
                 <video
                   src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-world-map-with-lines-and-dots-24653-large.mp4"
                   autoPlay
@@ -179,7 +258,7 @@ export default function Hero() {
             )}
             <div className="absolute -bottom-4 -right-4 bg-black text-[#C9A84C] text-xs font-bold px-4 md:px-6 py-2 md:py-3 rounded-full flex items-center gap-1 md:gap-2 shadow-xl whitespace-nowrap">
               <i className="fas fa-play-circle" />
-              {settings?.hero_video_url || !settings?.hero_image_url ? 'MOTION SHOWREEL 2024' : 'FEATURED DESIGN'}
+              {settings.hero_video_url || !settings.hero_image_url ? 'MOTION SHOWREEL 2024' : 'FEATURED DESIGN'}
             </div>
           </div>
         </div>

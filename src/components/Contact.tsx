@@ -4,43 +4,29 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Contact() {
-const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '', budget: '' });
-const [submitting, setSubmitting] = useState(false);
-const [submitted, setSubmitted] = useState(false);
-const [services, setServices] = useState<any[]>([]);
-const [siteEmail, setSiteEmail] = useState('hello@richkidgraphix.co.ke');
-const [whatsappNumber, setWhatsappNumber] = useState('254740639494');
+  const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '', budget: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [services, setServices] = useState<any[]>([]);
+  const [siteEmail, setSiteEmail] = useState('hello@richkidgraphix.co.ke');
+  const [whatsappNumber, setWhatsappNumber] = useState('254740639494');
 
-useEffect(() => {
-// Fetch services
-fetch('/api/services')
-.then(r => r.json())
-.then(d => setServices(Array.isArray(d) ? d : []))
-.catch(console.error);
+  useEffect(() => {
+    // Fetch services for dropdown
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(d => setServices(Array.isArray(d) ? d : []))
+      .catch(console.error);
 
-// Fetch site settings
-const storedSettings = localStorage.getItem('richkid_settings');
-if (storedSettings) {
-const settings = JSON.parse(storedSettings);
-if (settings.contact_email) setSiteEmail(settings.contact_email);
-if (settings.contact_whatsapp) setWhatsappNumber(settings.contact_whatsapp.replace(/\D/g, ''));
-}
-
-// Also try API
-fetch('/api/settings')
-.then(r => r.json())
-.then(d => {
-if (d.contact_email) {
-setSiteEmail(d.contact_email);
-const stored = localStorage.getItem('richkid_settings') || '{}';
-localStorage.setItem('richkid_settings', JSON.stringify({ ...JSON.parse(stored), contact_email: d.contact_email }));
-}
-if (d.contact_whatsapp) {
-setWhatsappNumber(d.contact_whatsapp.replace(/\D/g, ''));
-}
-})
-.catch(console.error);
-}, []);
+    // Fetch site settings for WhatsApp number and email
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => {
+        if (d?.contact_email) setSiteEmail(d.contact_email);
+        if (d?.contact_whatsapp) setWhatsappNumber(d.contact_whatsapp.replace(/\D/g, ''));
+      })
+      .catch(console.error);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,11 +40,10 @@ setWhatsappNumber(d.contact_whatsapp.replace(/\D/g, ''));
         body: JSON.stringify(formData),
       });
 
-      // Send to WhatsApp
+      // Send to WhatsApp with the admin-configured number
       const whatsappMessage = `*New Project Brief*%0A%0A*Name:* ${formData.name}%0A*Contact:* ${formData.email}%0A*Service:* ${formData.service}%0A*Proposed Budget:* KSH ${formData.budget || 'To be discussed'}%0A%0A*Message:* ${formData.message}`;
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
       
-      // Open WhatsApp
       window.open(whatsappUrl, '_blank');
 
       setSubmitted(true);
@@ -69,6 +54,14 @@ setWhatsappNumber(d.contact_whatsapp.replace(/\D/g, ''));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // Format WhatsApp number for display: +254 740 639 494
+  function formatWhatsAppNumber(num: string) {
+    if (num.length >= 9) {
+      return `+${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 9)} ${num.slice(9)}`;
+    }
+    return `+${num}`;
   }
 
   return (
@@ -103,39 +96,39 @@ setWhatsappNumber(d.contact_whatsapp.replace(/\D/g, ''));
               Ready to elevate your brand? Fill in the form and I&apos;ll get back to you within 24 hours with a custom proposal for your project.
             </motion.p>
 
-<motion.div
-initial={{ opacity: 0, y: 20 }}
-whileInView={{ opacity: 1, y: 0 }}
-viewport={{ once: true }}
-transition={{ delay: 0.2 }}
-className="mt-8 md:mt-16 space-y-4 md:space-y-8"
->
-<div className="flex items-center gap-3 md:gap-4">
-<div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
-<i className="fas fa-envelope text-xl md:text-2xl text-[#C9A84C]" />
-</div>
-<div>
-<p className="font-semibold text-xs md:text-sm">EMAIL</p>
-<a href={`mailto:${siteEmail}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
-{siteEmail}
-</a>
-</div>
-</div>
-<div className="flex items-center gap-3 md:gap-4">
-<div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
-<i className="fab fa-whatsapp text-xl md:text-2xl text-[#C9A84C]" />
-</div>
-<div>
-<p className="font-semibold text-xs md:text-sm">WHATSAPP</p>
-<a href={`https://wa.me/${whatsappNumber}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
-+{whatsappNumber.slice(0,3)} {whatsappNumber.slice(3,6)} {whatsappNumber.slice(6)}
-</a>
-</div>
-</div>
-<div className="text-[10px] md:text-xs uppercase font-bold tracking-widest text-gray-500">
-BASED IN MOMBASA, KENYA • AVAILABLE WORLDWIDE
-</div>
-</motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="mt-8 md:mt-16 space-y-4 md:space-y-8"
+            >
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-envelope text-xl md:text-2xl text-[#C9A84C]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-xs md:text-sm">EMAIL</p>
+                  <a href={`mailto:${siteEmail}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
+                    {siteEmail}
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fab fa-whatsapp text-xl md:text-2xl text-[#C9A84C]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-xs md:text-sm">WHATSAPP</p>
+                  <a href={`https://wa.me/${whatsappNumber}`} className="text-gray-300 hover:text-[#C9A84C] transition-colors text-xs md:text-sm block">
+                    {formatWhatsAppNumber(whatsappNumber)}
+                  </a>
+                </div>
+              </div>
+              <div className="text-[10px] md:text-xs uppercase font-bold tracking-widest text-gray-500">
+                BASED IN MOMBASA, KENYA • AVAILABLE WORLDWIDE
+              </div>
+            </motion.div>
           </motion.div>
 
           <motion.form
