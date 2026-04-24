@@ -12,10 +12,12 @@ const { data: siteSettings, error: siteError } = await supabase
 .select('*')
 .limit(1);
 
-console.log('site_settings query:', { siteSettings: siteSettings?.[0], siteError });
+// Log raw query result  
+console.log('Raw site_settings:', JSON.stringify({ data: siteSettings, error: siteError }));
 
 if (siteSettings && siteSettings.length > 0) {
 const row = siteSettings[0];
+console.log('Row youtube_videos type:', typeof row.youtube_videos, 'value:', row.youtube_videos);
 
 // Ensure youtube_videos is always an array
 let videos = [];
@@ -26,26 +28,23 @@ videos = row.youtube_videos;
 try {
 videos = JSON.parse(row.youtube_videos);
 } catch (e) {
-videos = [];
+console.log('JSON parse failed, trying string directly');
+videos = [row.youtube_videos];
 }
 }
 }
+
+// Log final videos
+console.log('Final videos array:', videos);
 
 // Build clean response
 const response = {
 youtube_channel: row.youtube_channel || '',
 youtube_videos: videos,
-site_logo: row.site_logo || '',
-contact_email: row.contact_email || '',
-contact_whatsapp: row.contact_whatsapp || '',
-about_text1: row.about_text1 || '',
-about_text2: row.about_text2 || '',
-about_text3: row.about_text3 || '',
-about_badge: row.about_badge || '',
-about_image_url: row.about_image_url || ''
+site_logo: row.site_logo || ''
 };
 
-console.log('Returning site_settings:', response);
+console.log('API Response:', JSON.stringify(response));
 return NextResponse.json(response);
 }
 
