@@ -31,13 +31,13 @@ export default function About() {
       .then(data => {
         if (data) {
           // Only use API values if they have content, otherwise keep defaults
-          setSettings({
-            about_text1: data.about_text1 || DEFAULT_SETTINGS.about_text1,
-            about_text2: data.about_text2 || DEFAULT_SETTINGS.about_text2,
-            about_text3: data.about_text3 || DEFAULT_SETTINGS.about_text3,
-            about_badge: data.about_badge || DEFAULT_SETTINGS.about_badge,
-            about_image_url: data.about_image_url || '',
-          });
+      setSettings({
+        about_text1: data.about_text1 !== undefined ? data.about_text1 : DEFAULT_SETTINGS.about_text1,
+        about_text2: data.about_text2 !== undefined ? data.about_text2 : DEFAULT_SETTINGS.about_text2,
+        about_text3: data.about_text3 !== undefined ? data.about_text3 : DEFAULT_SETTINGS.about_text3,
+        about_badge: data.about_badge !== undefined ? data.about_badge : DEFAULT_SETTINGS.about_badge,
+        about_image_url: data.about_image_url ?? '',
+      });
         }
       })
       .catch(console.error);

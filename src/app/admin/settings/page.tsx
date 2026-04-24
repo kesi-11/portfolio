@@ -82,28 +82,21 @@ async function handleSave() {
 setSaving(true);
 try {
 // Save to localStorage
-localStorage.setItem('richkid_settings', JSON.stringify(settings));
+      localStorage.setItem('richkid_settings', JSON.stringify(settings));
 
-console.log('Saving YouTube data:', {
-youtube_channel: settings.youtube_channel,
-youtube_videos: settings.youtube_videos
-});
-
-// Also try database
-const res = await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
 method: 'PUT',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(settings)
 });
 
-const result = await res.json();
-console.log('Database save result:', result);
+      const result = await res.json();
 
-if (!res.ok) {
-console.warn('Database save failed:', result.error);
-}
+      if (!res.ok) {
+        console.warn('Database save failed:', result.error);
+      }
 
-// Notify all components to update
+      // Notify all components to update
 window.dispatchEvent(new CustomEvent('settings-updated', { detail: settings }));
 
 setSaved(true);

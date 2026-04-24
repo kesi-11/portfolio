@@ -12,36 +12,44 @@ export async function GET() {
       .select('*')
       .limit(1);
 
-    if (siteSettings && siteSettings.length > 0) {
-      const row = siteSettings[0];
+  if (siteSettings && siteSettings.length > 0) {
+    const row = siteSettings[0];
 
-      // Ensure youtube_videos is always an array
-      let videos: any[] = [];
-      if (row.youtube_videos) {
-        if (Array.isArray(row.youtube_videos)) {
-          videos = row.youtube_videos;
-        } else if (typeof row.youtube_videos === 'string') {
-          try {
-            videos = JSON.parse(row.youtube_videos);
-          } catch {
-            videos = [row.youtube_videos];
-          }
+    let videos: any[] = [];
+    if (row.youtube_videos) {
+      if (Array.isArray(row.youtube_videos)) {
+        videos = row.youtube_videos;
+      } else if (typeof row.youtube_videos === 'string') {
+        try {
+          videos = JSON.parse(row.youtube_videos);
+        } catch {
+          videos = [row.youtube_videos];
         }
       }
+    }
 
-      // Return ALL fields from site_settings so the frontend can use them
-      const response = {
-        site_logo: row.site_logo || '',
-        youtube_channel: row.youtube_channel || '',
-        youtube_videos: videos,
-        contact_email: row.contact_email || '',
-        contact_whatsapp: row.contact_whatsapp || '',
-        about_text1: row.about_text1 || '',
-        about_text2: row.about_text2 || '',
-        about_text3: row.about_text3 || '',
-        about_badge: row.about_badge || '',
-        about_image_url: row.about_image_url || '',
-      };
+    let logo = row.site_logo ?? '';
+
+    if (!logo) {
+      const { data: heroData } = await supabase
+        .from('hero_settings')
+        .select('site_logo')
+        .single();
+      if (heroData?.site_logo) logo = heroData.site_logo;
+    }
+
+    const response = {
+      site_logo: logo,
+      youtube_channel: row.youtube_channel ?? '',
+      youtube_videos: videos,
+      contact_email: row.contact_email ?? '',
+      contact_whatsapp: row.contact_whatsapp ?? '',
+      about_text1: row.about_text1 ?? '',
+      about_text2: row.about_text2 ?? '',
+      about_text3: row.about_text3 ?? '',
+      about_badge: row.about_badge ?? '',
+      about_image_url: row.about_image_url ?? '',
+    };
 
       return NextResponse.json(response);
     }

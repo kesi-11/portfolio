@@ -21,17 +21,13 @@ export default function YouTube() {
       // Fetch from API with cache bust
       fetch(`/api/settings?t=${timestamp}`)
         .then(res => res.json())
-        .then(data => {
-          console.log('YouTube API response:', data);
-          console.log('youtube_channel:', data?.youtube_channel);
-          console.log('youtube_videos:', data?.youtube_videos);
-          if (data?.youtube_channel) {
+      .then(data => {
+        if (data?.youtube_channel) {
             setChannelUrl(data.youtube_channel);
           }
           if (data?.youtube_videos && Array.isArray(data.youtube_videos) && data.youtube_videos.length > 0) {
-            setVideos(data.youtube_videos);
-            console.log('✓ Videos set from API:', data.youtube_videos.length);
-          }
+          setVideos(data.youtube_videos);
+        }
           setLoading(false);
         })
         .catch((err) => {
