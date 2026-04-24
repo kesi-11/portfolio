@@ -143,6 +143,6 @@ export async function PUT(request: Request) {
     return NextResponse.json(result.data);
   } catch (error: any) {
     console.error('PUT settings error:', error);
-    return NextResponse.json({ error: error.message, fallback: true }, { status: 200 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

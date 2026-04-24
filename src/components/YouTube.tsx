@@ -17,7 +17,7 @@ export default function YouTube() {
 
   useEffect(() => {
     const loadSettings = () => {
-      fetch('/api/settings')
+      fetch(`/api/settings?_=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
           setChannelUrl(data?.youtube_channel || '');

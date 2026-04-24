@@ -41,8 +41,9 @@ about_image_url: '',
 youtube_channel: '',
 youtube_videos: []
 });
-const [saving, setSaving] = useState(false);
-const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
 const [error, setError] = useState('');
 const [loading, setLoading] = useState(true);
 
@@ -60,9 +61,9 @@ const parsed = JSON.parse(storedSettings);
 setSettings(prev => ({ ...prev, ...parsed }));
 }
 
-// Try database
-const res = await fetch('/api/settings');
-if (!res.ok) {
+    // Try database
+      const res = await fetch(`/api/settings?_=${Date.now()}`);
+      if (!res.ok) {
 throw new Error('Failed to load settings');
 }
 const data = await res.json();
@@ -79,34 +80,34 @@ setLoading(false);
 }
 
 async function handleSave() {
-setSaving(true);
-try {
-// Save to localStorage
+    setSaving(true);
+    setSaveError('');
+    try {
       localStorage.setItem('richkid_settings', JSON.stringify(settings));
 
       const res = await fetch('/api/settings', {
-method: 'PUT',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(settings)
-});
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
 
       const result = await res.json();
 
       if (!res.ok) {
-        console.warn('Database save failed:', result.error);
+        setSaveError('Database save failed: ' + (result.error || 'Unknown error'));
+        return;
       }
 
-      // Notify all components to update
-window.dispatchEvent(new CustomEvent('settings-updated', { detail: settings }));
+      window.dispatchEvent(new CustomEvent('settings-updated', { detail: settings }));
 
-setSaved(true);
-setTimeout(() => setSaved(false), 2000);
-} catch (error: any) {
-alert('Saved locally! Database error: ' + error.message);
-} finally {
-setSaving(false);
-}
-}
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (error: any) {
+      setSaveError('Failed to save: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
 if (loading) {
 return (
@@ -132,9 +133,15 @@ onClick={handleSave}
 disabled={saving}
 className="px-6 py-3 bg-[#C9A84C] text-black font-semibold rounded-2xl hover:bg-[#E5D4A1] transition-colors disabled:opacity-50"
 >
-{saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
-</button>
-</div>
+      {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
+      </button>
+      </div>
+
+      {saveError && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl mb-6">
+          {saveError}
+        </div>
+      )}
 
 <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 max-w-3xl space-y-8">
 {/* Logo Section */}
