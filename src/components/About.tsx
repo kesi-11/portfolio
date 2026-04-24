@@ -15,19 +15,30 @@ interface Settings {
   about_image_url?: string;
 }
 
+const DEFAULT_SETTINGS = {
+  about_text1: 'RichKid Graphix is a Mombasa-based premium design studio built on the belief that every brand deserves world-class visuals — bold, intentional, and unforgettable.',
+  about_text2: 'From street-level poster campaigns to high-end brand identities, I bring a sharp eye, deep craft knowledge, and a relentless pursuit of visual excellence to every project.',
+  about_text3: 'I work with businesses, musicians, creatives, and entrepreneurs who understand that design is not decoration — it\'s strategy.',
+  about_badge: 'GRAPHIC DESIGNER',
+};
+
 export default function About() {
-  const [settings, setSettings] = useState<Settings>({
-    about_text1: 'RichKid Graphix is a Mombasa-based premium design studio built on the belief that every brand deserves world-class visuals — bold, intentional, and unforgettable.',
-    about_text2: 'From street-level poster campaigns to high-end brand identities, I bring a sharp eye, deep craft knowledge, and a relentless pursuit of visual excellence to every project.',
-    about_text3: 'I work with businesses, musicians, creatives, and entrepreneurs who understand that design is not decoration — it\'s strategy.',
-    about_badge: 'GRAPHIC DESIGNER',
-  });
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
     fetch('/api/settings')
       .then(res => res.json())
       .then(data => {
-        if (data) setSettings(data);
+        if (data) {
+          // Only use API values if they have content, otherwise keep defaults
+          setSettings({
+            about_text1: data.about_text1 || DEFAULT_SETTINGS.about_text1,
+            about_text2: data.about_text2 || DEFAULT_SETTINGS.about_text2,
+            about_text3: data.about_text3 || DEFAULT_SETTINGS.about_text3,
+            about_badge: data.about_badge || DEFAULT_SETTINGS.about_badge,
+            about_image_url: data.about_image_url || '',
+          });
+        }
       })
       .catch(console.error);
   }, []);
