@@ -12,21 +12,41 @@ const { data: siteSettings, error: siteError } = await supabase
 .select('*')
 .limit(1);
 
-console.log('site_settings query:', { siteSettings, siteError });
+console.log('site_settings query:', { siteSettings: siteSettings?.[0], siteError });
 
 if (siteSettings && siteSettings.length > 0) {
 const row = siteSettings[0];
-// Parse JSONB fields if they're strings
-if (typeof row.youtube_videos === 'string') {
+
+// Ensure youtube_videos is always an array
+let videos = [];
+if (row.youtube_videos) {
+if (Array.isArray(row.youtube_videos)) {
+videos = row.youtube_videos;
+} else if (typeof row.youtube_videos === 'string') {
 try {
-row.youtube_videos = JSON.parse(row.youtube_videos);
+videos = JSON.parse(row.youtube_videos);
 } catch (e) {
-console.error('Failed to parse youtube_videos JSON:', e);
-row.youtube_videos = [];
+videos = [];
 }
 }
-console.log('Returning site_settings:', row);
-return NextResponse.json(row);
+}
+
+// Build clean response
+const response = {
+youtube_channel: row.youtube_channel || '',
+youtube_videos: videos,
+site_logo: row.site_logo || '',
+contact_email: row.contact_email || '',
+contact_whatsapp: row.contact_whatsapp || '',
+about_text1: row.about_text1 || '',
+about_text2: row.about_text2 || '',
+about_text3: row.about_text3 || '',
+about_badge: row.about_badge || '',
+about_image_url: row.about_image_url || ''
+};
+
+console.log('Returning site_settings:', response);
+return NextResponse.json(response);
 }
 
 if (siteError && siteError.code !== 'PGRST116') {
