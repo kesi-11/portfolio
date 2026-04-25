@@ -129,7 +129,51 @@ export default function Hero() {
 
   return (
     <section className="min-h-screen flex items-center relative overflow-hidden bg-[#050505] pt-[120px] pb-16 md:pt-32">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,#111111_70%)]" />
+      {/* Crystalline background with iridescent fractured glass effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Base dark gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#050505]" />
+        
+        {/* Fractured glass shards overlay */}
+        <div className="absolute inset-0 opacity-30">
+          {/* Top-left shard */}
+          <div 
+            className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-full blur-3xl"
+            style={{
+              clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+              transform: 'rotate(15deg)',
+            }}
+          />
+          {/* Bottom-right shard */}
+          <div 
+            className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-gradient-to-tl from-[#1a1a1a] to-[#2a2a2a] rounded-full blur-3xl"
+            style={{
+              clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+              transform: 'rotate(-15deg)',
+            }}
+          />
+        </div>
+        
+        {/* Iridescent highlights */}
+        <div className="absolute top-[20%] right-[15%] w-[30%] h-[30%] bg-gradient-to-br from-[#C9A84C]/10 to-transparent rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-[25%] left-[20%] w-[25%] h-[25%] bg-gradient-to-tl from-[#E5D4A1]/8 to-transparent rounded-full blur-2xl" />
+        
+        {/* Glass-like refraction lines */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-[30%] left-[10%] w-[60%] h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent transform rotate-12" />
+          <div className="absolute top-[50%] left-[20%] w-[40%] h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent transform -rotate-12" />
+          <div className="absolute top-[70%] left-[15%] w-[50%] h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent transform rotate-6" />
+        </div>
+        
+        {/* Crystalline texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 L100 50 L50 100 L0 50 Z' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+      </div>
 
       <div className="absolute top-20 left-10 w-72 h-72 bg-[#C9A84C]/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#C9A84C]/3 rounded-full blur-3xl" />
