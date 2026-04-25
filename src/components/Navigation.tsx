@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const navItems = [
   { name: 'About', href: '#about' },
-  { name: 'Services', href: '#services' },
+  { name: 'Services', href: '#pricing' },
   { name: 'Portfolio', href: '#portfolio' },
   { name: 'Reviews', href: '#reviews' },
   { name: 'Contact', href: '#contact' },
@@ -86,9 +86,9 @@ export default function Navigation() {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          <a
-            href="#services"
-            className="hidden md:inline-flex px-4 md:px-6 py-2 text-xs md:text-sm font-semibold border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#050505] rounded-full items-center gap-2 transition-all"
+        <a
+          href="#contact"
+          className="hidden md:inline-flex px-4 md:px-6 py-2 text-xs md:text-sm font-semibold border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#050505] rounded-full items-center gap-2 transition-all"
           >
             <i className="fas fa-arrow-right" />
             <span className="hidden lg:inline">HIRE ME</span>
@@ -120,9 +120,9 @@ export default function Navigation() {
               {item.name}
             </a>
           ))}
-          <a
-            href="#services"
-            onClick={() => setMobileOpen(false)}
+        <a
+          href="#contact"
+          onClick={() => setMobileOpen(false)}
             className="mt-4 py-4 bg-[#C9A84C] text-black text-center font-bold rounded-xl"
           >
             HIRE ME
